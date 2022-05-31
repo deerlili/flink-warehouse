@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <!--  日志存储路径  -->
-    <property name="LOG_HOME" value="/opt/module/logs" />
+    <property name="LOG_HOME" value="/opt/module/gmall-flink/logs" />
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender"> <encoder>
         <pattern>%msg%n</pattern> </encoder>
     </appender>
