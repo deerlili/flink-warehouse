@@ -14,8 +14,8 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <flink.cdc.version>2.0.2</flink.cdc.version>
-        <!--2.2.0-->
+        <flink.cdc.version>2.2.0</flink.cdc.version>
+        <!--2.2.0  2.0.2 -->
         <flink.version>1.13.0</flink.version>
         <scala.version>2.12</scala.version>
         <hadoop.version>3.2.2</hadoop.version>

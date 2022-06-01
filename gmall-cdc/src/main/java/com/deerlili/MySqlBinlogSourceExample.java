@@ -10,13 +10,13 @@ import java.util.Properties;
 /**
  * @author deerlili
  * @date 2022/6/1
- * @des
+ * @des cdc version 2.0.2
  */
 
 public class MySqlBinlogSourceExample {
     public static void main(String[] args) throws Exception {
         Properties debeziumProperties = new Properties();
-        debeziumProperties.put("snapshot.locking.mode", "none");// do not use lock
+        debeziumProperties.put("snapshot.locking.mode", "none");
         SourceFunction<String> sourceFunction = MySqlSource.<String>builder()
                 .hostname("hadoop100")
                 .port(3306)
