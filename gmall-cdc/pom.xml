@@ -15,12 +15,10 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <flink.cdc.version>2.2.0</flink.cdc.version>
-        <!--2.2.0  2.0.2 -->
         <flink.version>1.13.0</flink.version>
         <scala.version>2.12</scala.version>
         <hadoop.version>3.2.2</hadoop.version>
-        <mysql.version>5.1.47</mysql.version>
-
+        <mysql.version>8.0.21</mysql.version>
         <fastjson.version>1.2.83</fastjson.version>
         <!--据国家网络与信息安全信息通报中心监测发现，阿里巴巴公司开源Java开发组件fastjson存在反序列化漏洞。
         此次事件影响fastjson 1.2.80及之前所有版本。
