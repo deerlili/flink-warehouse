@@ -8,7 +8,6 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
-import scala.tools.nsc.doc.model.Class;
 
 /**
  * @author lixx
@@ -37,13 +36,13 @@ public class MySqlSqlExample {
                 "'table-name'='base_trademark')");
 
         // 第一种
-        //Table table = tableEnv.sqlQuery("select * from base_trademark_binlog");
+        Table table = tableEnv.sqlQuery("select * from base_trademark_binlog");
         //DataStream<Tuple2<Boolean, Tuple2<Integer, Integer>>> dataStream = tableEnv.toRetractStream(table, Types.TUPLE(Types.STRING, Types.STRING, Types.STRING));
-        ////DataStream<Row> dataStream = tableEnv.toChangelogStream(table);
-        //dataStream.print();
+        DataStream<Row> dataStream = tableEnv.toChangelogStream(table);
+        dataStream.print();
 
         // 第二种
-        tableEnv.executeSql("select * from base_trademark_binlog").print();
+        //tableEnv.executeSql("select * from base_trademark_binlog").print();
 
         env.execute("Flink CDC With SQl");
     }
