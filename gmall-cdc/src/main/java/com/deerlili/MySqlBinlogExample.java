@@ -4,7 +4,6 @@ import com.ververica.cdc.connectors.mysql.source.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
@@ -15,8 +14,10 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @date 2022/6/2
  * @notes MySql Binlog DataStream Source
  */
-class MySqlBinlogExample {
+public class MySqlBinlogExample {
+
     public static void main(String[] args) throws Exception {
+
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
                 .hostname("hadoop100")
                 .port(3306)
@@ -27,7 +28,7 @@ class MySqlBinlogExample {
                 // 不指定，默认所有表;指定参数，指定方式为db.table
                 .tableList("gmall_flink.base_trademark")
                 //.tableList("gmall_flink.base_trademark,gmall_flink.activity_info")
-                .scanNewlyAddedTableEnabled(true)
+                //.scanNewlyAddedTableEnabled(true)
                 /*
                  * initial:初始化全量读取，然后binlog最新位置增量，就是先查历史数据，增量数据binlog
                  * earliest:不做初始化，从binlog开始读取。需要（先开启binlog,然后建库,建表）不然会报错
@@ -35,16 +36,16 @@ class MySqlBinlogExample {
                  * timestamp:读取时间戳之后的数据，大于等于
                  * specificOffset:指定位置
                  * */
-                .startupOptions(StartupOptions.latest())
+                .startupOptions(StartupOptions.initial())
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // 开启 checkpoint 并指定状态后端为 hdfs 也可以：rocksdb
-        env.setStateBackend(new FsStateBackend("hdfs://hadoop100:8020/gmall-flink/ck"));
+        env.setStateBackend(new FsStateBackend("hdfs://hadoop100:9000/gmall-flink/ck"));
         // 设置hdfs用户
-        System.setProperty("HADOOP_USER_NAME","root");
+        System.setProperty("HADOOP_USER_NAME", "root");
 
         // 生产环境可以设置成5分钟或10分钟做一次check
         env.enableCheckpointing(5000);
