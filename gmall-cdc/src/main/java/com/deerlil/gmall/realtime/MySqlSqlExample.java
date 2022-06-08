@@ -1,4 +1,4 @@
-package com.deerlili;
+package com.deerlil.gmall.realtime;
 
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple2;

@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="gmall-cdc" />
+        <module name="gmall-realtime" />
         <module name="gmall-logger" />
       </profile>
     </annotationProcessing>

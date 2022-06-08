@@ -1,4 +1,4 @@
-package com.deerlili.gmalllogger;
+package com.deerlil.gmall.realtime.gmalllogger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

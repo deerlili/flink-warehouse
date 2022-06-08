@@ -1,4 +1,4 @@
-package com.deerlili;
+package com.deerlil.gmall.realtime.app.ods;
 
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
@@ -8,14 +8,14 @@ import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 /**
  * @author lixx
- * @date 2022/6/2
- * @notes MySql Binlog DataStream Source
+ * @date 2022/6/8
+ * @notes ods flink cdc
  */
-public class MySqlBinlogExample {
-
+public class FlinkCDC {
     public static void main(String[] args) throws Exception {
 
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
@@ -23,20 +23,9 @@ public class MySqlBinlogExample {
                 .port(3306)
                 .username("test")
                 .password("123456")
-                // set captured database, If you need to synchronize the whole database, Please set tableList to ".*".
                 .databaseList("gmall_flink")
-                // 不指定，默认所有表;指定参数，指定方式为db.table
-                .tableList("gmall_flink.base_trademark")
-                //.tableList("gmall_flink.base_trademark,gmall_flink.activity_info")
-                //.scanNewlyAddedTableEnabled(true)
-                /*
-                 * initial:初始化全量读取，然后binlog最新位置增量，就是先查历史数据，增量数据binlog
-                 * earliest:不做初始化，从binlog开始读取。需要（先开启binlog,然后建库,建表）不然会报错
-                 * latest:只会读取连接后的binlog
-                 * timestamp:读取时间戳之后的数据，大于等于
-                 * specificOffset:指定位置
-                 * */
-                .startupOptions(StartupOptions.initial())
+                .scanNewlyAddedTableEnabled(true)
+                .startupOptions(StartupOptions.latest())
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();
 
@@ -59,9 +48,8 @@ public class MySqlBinlogExample {
         // 设置任务关闭的时候保留最后一次 CK 数据
         env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
-        // 新版本，不需要设置。指定从CK自动重启策略
-        /*env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3,2000L));*/
 
+        // 数据写入Kafka
         env.fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySql Source")
                 // set 4 parallel source tasks
                 .setParallelism(4)
@@ -69,7 +57,8 @@ public class MySqlBinlogExample {
                 // use parallelism 1 for sink to keep message ordering
                 .setParallelism(1);
 
-        env.execute("Print MySQL Snapshot + Binlog");
+        new FlinkKafkaProducer<String>()
 
+        env.execute("Print MySQL Snapshot + Binlog");
     }
 }
