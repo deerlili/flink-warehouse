@@ -27,6 +27,12 @@ public class MySqlBinlogExample {
                 .databaseList("gmall_flink")
                 // 不指定，默认所有表;指定参数，指定方式为db.table
                 .tableList("gmall_flink.base_trademark")
+                /*示例
+                * .tableList("")   gmall_flink下所有表
+                * .tableList("*")  gmall_flink下所有表
+                * .tableList("gmall_flink.base_trademark")  gmall_flink下所有表
+                * .tableList("gmall_flink.base_trademarkm,gmall_flink.f1")  gmall_flink下所有表
+                * */
                 //.tableList("gmall_flink.base_trademark,gmall_flink.activity_info")
                 //.scanNewlyAddedTableEnabled(true)
                 /*

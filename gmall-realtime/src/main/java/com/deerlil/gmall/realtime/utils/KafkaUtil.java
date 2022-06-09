@@ -1,7 +1,6 @@
 package com.deerlil.gmall.realtime.utils;
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 /**
@@ -10,8 +9,9 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
  * @notes Kafka Util
  */
 public class KafkaUtil {
+    private static String BROKER_LIST = "hadoop102:9092,hadoop103:9092,hadoop104:9092";
+
     public static FlinkKafkaProducer<String> getKafkaProducer(String topic) {
-        final String brokerList = "hadoop102:9092,hadoop103:9092,hadoop104:9092";
-        return new FlinkKafkaProducer<String>(brokerList, topic, new SimpleStringSchema());
+        return new FlinkKafkaProducer<String>(BROKER_LIST, topic, new SimpleStringSchema());
     }
 }
