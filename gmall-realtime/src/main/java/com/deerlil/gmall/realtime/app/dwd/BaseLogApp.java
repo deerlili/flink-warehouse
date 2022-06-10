@@ -32,7 +32,11 @@ import org.apache.flink.util.OutputTag;
  * @author lixx
  * @date 2022/6/10
  * @notes base log app dwd
+ * 数据流：web/app -> Nginx -> SpingBoot -> Kafka（ods）-> FlinkApp -> Kafka（dwd)
+ * 程   序：mocklog -> Nginx -> Logger.sh -> Kafka（zk）-> BaseLogApp -> Kafka
  */
+
+
 public class BaseLogApp {
     public static void main(String[] args) throws Exception {
         // 1.获取执行环境
@@ -55,7 +59,7 @@ public class BaseLogApp {
 
         // 3.将每行数据转换为Json对象
         // 脏数据标记,如果传输的数据格式不是JSON的把数据写入侧输出流，防止异常
-        OutputTag<String> outputTag = new OutputTag<>("Dirty");
+        OutputTag<String> outputTag = new OutputTag<String>("Dirty"){};
         SingleOutputStreamOperator<JSONObject> jsonObjDS = kafkaDS.process(new ProcessFunction<String, JSONObject>() {
             @Override
             public void processElement(String value, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) throws Exception {
@@ -120,8 +124,8 @@ public class BaseLogApp {
         //  "ts":1608259054000
         //}
         //TODO 5.分流，侧输出流（页面：主流，启动：侧输出流，曝光：侧输出流）
-        OutputTag<String> startTag = new OutputTag<>("start");
-        OutputTag<String> displayTag = new OutputTag<>("display");
+        OutputTag<String> startTag = new OutputTag<String>("start"){};
+        OutputTag<String> displayTag = new OutputTag<String>("display"){};
 
         SingleOutputStreamOperator<String> pageDS = jsonObjWithFlag.process(new ProcessFunction<JSONObject, String>() {
             @Override
