@@ -82,6 +82,7 @@
             <artifactId>lombok</artifactId>
             <version>1.18.22</version>
         </dependency>
+        <!--JDBC连接phoenix-->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-jdbc_${scala.version}</artifactId>

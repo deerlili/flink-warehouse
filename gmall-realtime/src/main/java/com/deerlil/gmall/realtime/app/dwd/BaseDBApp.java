@@ -85,10 +85,10 @@ public class BaseDBApp {
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();
         DataStreamSource<String> mysqlConfigDs = env.fromSource(mySqlConfigBuilder, WatermarkStrategy.noWatermarks(), "mysql config");
-        //
-        //MapStateDescriptor mapStateDescriptor = new MapStateDescriptor<>();
-        //BroadcastStream<String> broadcast = mysqlConfigDs.broadcast(mapStateDescriptor);
-        //
+
+        MapStateDescriptor mapStateDescriptor = new MapStateDescriptor<>();
+        BroadcastStream<String> broadcast = mysqlConfigDs.broadcast(mapStateDescriptor);
+
 
 
 
