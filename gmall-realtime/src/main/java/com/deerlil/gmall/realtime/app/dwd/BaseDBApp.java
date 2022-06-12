@@ -1,6 +1,7 @@
 package com.deerlil.gmall.realtime.app.dwd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.deerlil.gmall.realtime.app.function.TableProcessFunction;
 import com.deerlil.gmall.realtime.bean.TableProcess;
 import com.deerlil.gmall.realtime.utils.KafkaUtil;
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
@@ -14,6 +15,7 @@ import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.BroadcastConnectedStream;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
@@ -96,29 +98,12 @@ public class BaseDBApp {
         BroadcastConnectedStream<JSONObject, String>  connectedStream = filterDS.connect(broadcast);
 
         // 6.分流处理数据-广播流数据、主流数据(根据广播流数据进行处理)
-        connectedStream.process(new BroadcastProcessFunction<JSONObject, String, Object>() {
-            @Override
-            public void processElement(JSONObject jsonObject, BroadcastProcessFunction<JSONObject, String, Object>.ReadOnlyContext readOnlyContext, Collector<Object> collector) throws Exception {
-                // 主流数据
-                /*
-                * 1.读取广播状态
-                * 2.过滤数据
-                * 3.分流
-                */
-            }
+        OutputTag<JSONObject> hbaseTag = new OutputTag<JSONObject>("hbase-tag") {};
+        SingleOutputStreamOperator<JSONObject> kafka =
+                connectedStream.process(new TableProcessFunction(hbaseTag,mapStateDescriptor));
 
-            @Override
-            public void processBroadcastElement(String s, BroadcastProcessFunction<JSONObject, String, Object>.Context context, Collector<Object> collector) throws Exception {
-                // 广播流
-                /*
-                * 1.解析数据 String -> TableProcess
-                * 2.检查Hbase表是否存在并建表
-                * 3.写入状态
-                */
-                TableProcess tableProcess = JSONObject.parseObject(s).toJavaObject(TableProcess.class);
-            }
-        });
         // 7.提取Kafka流数据和Hbase流数据
+        kafka.getSideOutput(hbaseTag)
         // 8.将Kafka数据写入Kafka主题，将Hbase数据写入Phoenix表
         // 9.启动任务
 
