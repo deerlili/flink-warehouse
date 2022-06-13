@@ -32,12 +32,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, String, JSONObject> {
 
-    private OutputTag<JSONObject> objectOutputTag;
+    private OutputTag<JSONObject> hbaseTag;
     private MapStateDescriptor<String, TableProcess> mapStateDescriptor;
     private Connection connection;
 
-    public TableProcessFunction(OutputTag<JSONObject> objectOutputTag, MapStateDescriptor<String, TableProcess> mapStateDescriptor) {
-        this.objectOutputTag = objectOutputTag;
+    public TableProcessFunction(OutputTag<JSONObject> hbaseTag, MapStateDescriptor<String, TableProcess> mapStateDescriptor) {
+        this.hbaseTag = hbaseTag;
         this.mapStateDescriptor = mapStateDescriptor;
     }
 
@@ -73,11 +73,11 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
     // 建表方法
     private void checkTable(String sinkTable, String sinkColumns, String sinkPk, String sinkExtend) {
 
-        if (sinkPk == null) {
+        if (sinkPk.isEmpty()) {
             sinkPk = "id";
         }
 
-        if (sinkExtend == null) {
+        if (sinkExtend.isEmpty()) {
             sinkExtend = "";
         }
 
@@ -112,28 +112,25 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         * 3.分流
         * */
 
-        // {
-        // "before":null,
-        // "after":null},
-        // "source":{
-        //          "version":"1.5.4.Final",
-        //          "connector":"mysql"
-        //          ,"name":"mysql_binlog_source",
-        //          "ts_ms":0,"
-        //          snapshot":"false",
-        //          "db":"gmall_flink"
-        //          ,"sequence":null,
-        //          "table":"base_trademark"},
-        // "op":"r","ts_ms":1655040744780,"transaction":null}
+        // 1.获取状态数据
         ReadOnlyBroadcastState<String, TableProcess> broadcastState = readOnlyContext.getBroadcastState(mapStateDescriptor);
         JSONObject source = jsonObject.getJSONObject("source");
         String key = source.getString("db") + "-" + source.getString("table");
         TableProcess tableProcess = broadcastState.get(key);
 
-        if (tableProcess == null) {
+        if (tableProcess != null) {
+            // 2.过滤字段
             JSONObject after = jsonObject.getJSONObject("after");
             filterColumn(after,tableProcess.getSinkColumns());
 
+            // 3.分流
+            if (TableProcess.SINK_TYPE_KAFKA.equals(tableProcess.getSinkType())) {
+                // Kafka数据，将数据输出到主流
+                collector.collect(jsonObject);
+            } else if (TableProcess.SINK_TYPE_HBASE.equals(tableProcess.getSinkType())) {
+                // Hbase数据，将数据输出到侧输出流
+                readOnlyContext.output(hbaseTag,jsonObject);
+            }
         } else {
             log.warn("该组合不存在，Key为{key}：", key);
         }
@@ -141,7 +138,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
 
     /**
      * 过滤方法
-     * @param after                {"id":2,"tm_name":"苹果","logo_url":"/static/default.jpg"}
+     * @param after         {"id":2,"tm_name":"苹果","logo_url":"/static/default.jpg"}
      * @param sinkColumns   id,tm_name
      */
     private void filterColumn(JSONObject after, String sinkColumns) {

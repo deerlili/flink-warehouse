@@ -1,6 +1,7 @@
 package com.deerlil.gmall.realtime.app.dwd;
 
 import com.alibaba.fastjson.JSONObject;
+import com.deerlil.gmall.realtime.app.function.DimSink;
 import com.deerlil.gmall.realtime.app.function.TableProcessFunction;
 import com.deerlil.gmall.realtime.bean.TableProcess;
 import com.deerlil.gmall.realtime.utils.KafkaUtil;
@@ -32,7 +33,7 @@ import org.apache.flink.util.OutputTag;
  */
 public class BaseDBApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         // 1.获取执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -103,10 +104,13 @@ public class BaseDBApp {
                 connectedStream.process(new TableProcessFunction(hbaseTag,mapStateDescriptor));
 
         // 7.提取Kafka流数据和Hbase流数据
-        kafka.getSideOutput(hbaseTag)
-        // 8.将Kafka数据写入Kafka主题，将Hbase数据写入Phoenix表
-        // 9.启动任务
+        DataStream<JSONObject> hbaseDS = kafka.getSideOutput(hbaseTag);
 
+        // 8.将Kafka数据写入Kafka主题，将Hbase数据写入Phoenix表
+        hbaseDS.addSink(new DimSink());
+
+        // 9.启动任务
+        env.execute("dwd_db_base_app");
     }
 
 }

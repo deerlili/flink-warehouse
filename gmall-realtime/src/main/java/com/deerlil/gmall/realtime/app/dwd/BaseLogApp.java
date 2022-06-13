@@ -7,36 +7,22 @@ import com.deerlil.gmall.realtime.utils.KafkaUtil;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.core.fs.CloseableRegistry;
-import org.apache.flink.metrics.MetricGroup;
-import org.apache.flink.runtime.execution.Environment;
-import org.apache.flink.runtime.query.TaskKvStateRegistry;
-import org.apache.flink.runtime.state.*;
-import org.apache.flink.runtime.state.filesystem.FsStateBackend;
-import org.apache.flink.runtime.state.ttl.TtlTimeProvider;
-import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 
-
-
 /**
  * @author lixx
  * @date 2022/6/10
  * @notes base log app dwd
- * 数据流：web/app -> Nginx -> SpingBoot -> Kafka（ods）-> FlinkApp -> Kafka（dwd)
- * 程   序：mocklog -> Nginx -> Logger.sh -> Kafka（zk）-> BaseLogApp -> Kafka
+ * 数据流：web/app -> Nginx -> SpringBoot -> Kafka（ods）-> FlinkApp -> Kafka（dwd)
+ * 程 序：mockLog -> Nginx -> Logger.sh -> Kafka（zk）-> BaseLogApp -> Kafka
  */
-
-
 public class BaseLogApp {
     public static void main(String[] args) throws Exception {
         // 1.获取执行环境
@@ -119,17 +105,17 @@ public class BaseLogApp {
                 });
 
         // {
-        //  "common":{"ar":"110000","ba":"Xiaomi","ch":"wandoujia","is_new":"0","md":"Xiaomi 10 Pro ","mid":"mid_20","os":"Android 10.0","uid":"26","vc":"v2.1.134"},
+        //  "common":{"ar":"110000","ba":"Xiaomi","ch":"wanDouJia","is_new":"0","md":"Xiaomi 10 Pro ","mid":"mid_20","os":"Android 10.0","uid":"26","vc":"v2.1.134"},
         //  "start":{"entry":"icon","loading_time":7568,"open_ad_id":10,"open_ad_ms":9519,"open_ad_skip_ms":1854},
         //  "ts":1608259054000
         //}
-        //TODO 5.分流，侧输出流（页面：主流，启动：侧输出流，曝光：侧输出流）
+        // 5.分流，侧输出流（页面：主流，启动：侧输出流，曝光：侧输出流）
         OutputTag<String> startTag = new OutputTag<String>("start"){};
         OutputTag<String> displayTag = new OutputTag<String>("display"){};
 
         SingleOutputStreamOperator<String> pageDS = jsonObjWithFlag.process(new ProcessFunction<JSONObject, String>() {
             @Override
-            public void processElement(JSONObject jsonObject, ProcessFunction<JSONObject, String>.Context context, Collector<String> collector) throws Exception {
+            public void processElement(JSONObject jsonObject, ProcessFunction<JSONObject, String>.Context context, Collector<String> collector) {
                 // 获取启动日志字段
                 String start = jsonObject.getString("start");
                 if (start != null && start.length() > 0) {
@@ -140,7 +126,7 @@ public class BaseLogApp {
                     collector.collect(jsonObject.toJSONString());
                     // 取出数据中的曝光数据
                     JSONArray displays = jsonObject.getJSONArray("displays");
-                    if (displays != null && displays.size() > 0) {
+                    if (!displays.isEmpty()) {
                         // 获取页面ID
                         String pageId = jsonObject.getJSONObject("page").getString("page_id");
                         for (int i = 0; i < displays.size(); i++) {
@@ -157,16 +143,16 @@ public class BaseLogApp {
 
         // 6.提取侧输出流
         DataStream<String> startDS = pageDS.getSideOutput(startTag);
-        DataStream<String> dispalyDS = pageDS.getSideOutput(displayTag);
+        DataStream<String> displayDS = pageDS.getSideOutput(displayTag);
 
-        //TODO 7.将三个流进行打印并输出到对应的Kafka主题
+        // 7.将三个流进行打印并输出到对应的Kafka主题
         startDS.print("Start>>>");
         pageDS.print("Page>>>");
-        dispalyDS.print("Display>>>");
+        displayDS.print("Display>>>");
 
         startDS.addSink(KafkaUtil.getKafkaProducer("dwd_start_log"));
         pageDS.addSink(KafkaUtil.getKafkaProducer("dwd_page_log"));
-        dispalyDS.addSink(KafkaUtil.getKafkaProducer("dwd_display_log"));
+        displayDS.addSink(KafkaUtil.getKafkaProducer("dwd_display_log"));
 
         // 8.启动任务
         env.execute("BaseLogAPP");
