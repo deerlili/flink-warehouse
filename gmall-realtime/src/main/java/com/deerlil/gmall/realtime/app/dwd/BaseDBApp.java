@@ -104,10 +104,11 @@ public class BaseDBApp {
                 connectedStream.process(new TableProcessFunction(hbaseTag,mapStateDescriptor));
 
         // 7.提取Kafka流数据和Hbase流数据
-        DataStream<JSONObject> hbaseDS = kafka.getSideOutput(hbaseTag);
+        DataStream<JSONObject> hbase = kafka.getSideOutput(hbaseTag);
 
         // 8.将Kafka数据写入Kafka主题，将Hbase数据写入Phoenix表
-        hbaseDS.addSink(new DimSink());
+        hbase.print("hbase>>>");
+        kafka.print("kafka>>>");
 
         // 9.启动任务
         env.execute("dwd_db_base_app");

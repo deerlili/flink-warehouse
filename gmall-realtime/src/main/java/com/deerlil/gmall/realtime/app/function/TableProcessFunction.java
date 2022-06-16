@@ -2,10 +2,10 @@ package com.deerlil.gmall.realtime.app.function;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.flink.api.common.state.BroadcastState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
@@ -73,33 +73,54 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
     // 建表方法
     private void checkTable(String sinkTable, String sinkColumns, String sinkPk, String sinkExtend) {
 
-        if (sinkPk.isEmpty()) {
-            sinkPk = "id";
-        }
+        PreparedStatement preparedStatement = null;
 
-        if (sinkExtend.isEmpty()) {
-            sinkExtend = "";
-        }
-
-        StringBuilder tableTableSQL = new StringBuilder("create table if not exists ").append(HbaseConfig.HBASE_SCHEMA)
-            .append(".").append(sinkTable).append("(");
-
-        String[] columns = sinkColumns.split(",");
-        for (int i = 0; i < columns.length; i++) {
-            String column = columns[i];
-            // 判断是否为主键
-            if (sinkPk.equals(column)) {
-                tableTableSQL.append(column).append(" ").append("varchar primary key");
-            } else {
-                tableTableSQL.append(column).append(" ").append("varchar");
+        try {
+            if (sinkPk.isEmpty()) {
+                sinkPk = "id";
             }
-            // 判断时候为最后一个字段,不是添加逗号
-            if (i < columns.length - 1) {
-                tableTableSQL.append(",");
+
+            if (sinkExtend.isEmpty()) {
+                sinkExtend = "";
+            }
+
+            StringBuilder tableTableSQL = new StringBuilder("create table if not exists ")
+                .append(HbaseConfig.HBASE_SCHEMA).append(".").append(sinkTable).append("(");
+
+            String[] columns = sinkColumns.split(",");
+            for (int i = 0; i < columns.length; i++) {
+                String column = columns[i];
+                // 判断是否为主键
+                if (sinkPk.equals(column)) {
+                    tableTableSQL.append(column).append(" ").append("varchar primary key");
+                } else {
+                    tableTableSQL.append(column).append(" ").append("varchar");
+                }
+                // 判断时候为最后一个字段,不是添加逗号
+                if (i < columns.length - 1) {
+                    tableTableSQL.append(",");
+                }
+            }
+            tableTableSQL.append(")").append(sinkExtend);
+            log.info(tableTableSQL.toString());
+
+            // 预编译SQL
+            preparedStatement = connection.prepareStatement(tableTableSQL.toString());
+
+            // 执行
+            preparedStatement.execute();
+        } catch (SQLException e) {
+            log.error(String.valueOf(e));
+            throw new RuntimeException("Phoenix表"+sinkTable+"建表异常！");
+        } finally {
+            if (preparedStatement != null) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
-        tableTableSQL.append(")").append(sinkExtend);
-        log.info(tableTableSQL.toString());
     }
 
     @Override
@@ -124,15 +145,19 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
             filterColumn(after,tableProcess.getSinkColumns());
 
             // 3.分流
-            if (TableProcess.SINK_TYPE_KAFKA.equals(tableProcess.getSinkType())) {
+            // 将输出表和主题信息写入jsonObject
+            jsonObject.put("sinkTable",tableProcess.getSinkTable());
+
+            String sinkType = tableProcess.getSinkType();
+            if (TableProcess.SINK_TYPE_KAFKA.equals(sinkType)) {
                 // Kafka数据，将数据输出到主流
                 collector.collect(jsonObject);
-            } else if (TableProcess.SINK_TYPE_HBASE.equals(tableProcess.getSinkType())) {
+            } else if (TableProcess.SINK_TYPE_HBASE.equals(sinkType)) {
                 // Hbase数据，将数据输出到侧输出流
                 readOnlyContext.output(hbaseTag,jsonObject);
             }
         } else {
-            log.warn("该组合不存在，Key为{key}：", key);
+            log.warn("该组合不存在，Key为{}：", key);
         }
     }
 
