@@ -109,6 +109,7 @@ public class BaseDBApp {
         // 8.将Kafka数据写入Kafka主题，将Hbase数据写入Phoenix表
         hbase.print("hbase>>>");
         kafka.print("kafka>>>");
+        // zk hdfs hbase kafka
 
         // 9.启动任务
         env.execute("dwd_db_base_app");
