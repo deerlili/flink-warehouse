@@ -89,6 +89,11 @@
             <version>${flink.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>2.4.12</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.phoenix</groupId>
             <artifactId>phoenix-spark</artifactId>
             <version>5.0.0-HBase-2.0</version>
@@ -99,6 +104,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.phoenix</groupId>-->
+<!--            <artifactId>phoenix-core</artifactId>-->
+<!--            <version>5.0.0-HBase-2.0</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.hadoop</groupId>-->
+<!--            <artifactId>hadoop-common</artifactId>-->
+<!--            <version>${hadoop.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.google.guava</groupId>-->
+<!--            <artifactId>guava</artifactId>-->
+<!--            <version>27.0-jre</version>-->
+<!--        </dependency>-->
         <!--ERROR:com.google.protobuf.LiteralByteString-->
         <dependency>
             <groupId>com.google.protobuf</groupId>

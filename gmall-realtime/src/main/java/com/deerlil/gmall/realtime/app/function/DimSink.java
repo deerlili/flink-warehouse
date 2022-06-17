@@ -3,9 +3,9 @@ package com.deerlil.gmall.realtime.app.function;
 import com.alibaba.fastjson.JSONObject;
 import com.deerlil.gmall.realtime.common.HbaseConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-import org.apache.hadoop.util.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -17,10 +17,10 @@ import java.util.Set;
 /**
  * @author lixx
  * @date 2022/6/13
- * @notes hbase create dim table
+ * @notes hbase upsert dim data
  */
-@Slf4j
 public class DimSink extends RichSinkFunction<JSONObject> {
+
     private static final long serialVersionUID = 1905122041950251207L;
 
     private Connection connection;
@@ -41,9 +41,8 @@ public class DimSink extends RichSinkFunction<JSONObject> {
             Set<String> keySet = after.keySet();
             Collection<Object> values = after.values();
 
-            JSONObject source = value.getJSONObject("source");
-            // 表名
-            String tableName = source.getString("table");
+            // Hbase表名
+            String tableName = value.getString("sinkTable");
             // 创建插入数据的SQL
             String upsertSql = genUpsertSql(tableName, keySet, values);
             // 编译
@@ -53,9 +52,9 @@ public class DimSink extends RichSinkFunction<JSONObject> {
             // 提交
             connection.commit();
         } catch (SQLException e) {
-            log.error("插入Phoenix数据失败",e.getMessage());
+            System.out.println("插入Phoenix数据失败"+e.getMessage());
         } finally {
-            if (preparedStatement == null) {
+            if (preparedStatement != null) {
                 preparedStatement.close();
             }
         }
@@ -66,12 +65,13 @@ public class DimSink extends RichSinkFunction<JSONObject> {
         buffer.append("upsert into ")
                 .append(HbaseConfig.HBASE_SCHEMA).append(".").append(tableName)
                 .append("(")
-                .append(StringUtils.join(",", keys))
+                .append(StringUtils.join(keys,","))
                 .append(")")
-                .append("values")
-                .append("(")
-                .append(StringUtils.join(",", values))
-                .append(")");
+                .append(" values")
+                .append("('")
+                .append(StringUtils.join(values,"','"))
+                .append("')");
+        System.out.println(buffer.toString());
         return buffer.toString();
     }
 }

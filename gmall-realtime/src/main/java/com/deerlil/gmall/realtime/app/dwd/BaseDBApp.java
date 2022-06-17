@@ -112,6 +112,8 @@ public class BaseDBApp {
         kafka.print("kafka>>>");
         // zk hdfs hbase kafka
 
+        hbase.addSink(new DimSink());
+
         // 9.启动任务
         env.execute("dwd_db_base_app");
     }

@@ -15,7 +15,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * @author lixx
  * @date 2022/6/8
  */
-public class FlinkCDC {
+public class FlinkCDCApp {
     public static void main(String[] args) throws Exception {
 
         // 1.获取执行环境
