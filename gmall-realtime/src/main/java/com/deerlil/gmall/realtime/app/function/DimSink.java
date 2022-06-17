@@ -5,6 +5,7 @@ import com.deerlil.gmall.realtime.common.HbaseConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+import org.apache.hadoop.util.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -42,9 +43,9 @@ public class DimSink extends RichSinkFunction<JSONObject> {
 
             JSONObject source = value.getJSONObject("source");
             // 表名
-            String table = source.getString("table");
+            String tableName = source.getString("table");
             // 创建插入数据的SQL
-            String upsertSql = genUpsertSql(table, keySet, values);
+            String upsertSql = genUpsertSql(tableName, keySet, values);
             // 编译
             preparedStatement = connection.prepareStatement(upsertSql);
             // 执行
@@ -60,8 +61,17 @@ public class DimSink extends RichSinkFunction<JSONObject> {
         }
     }
 
-    private String genUpsertSql(String table, Set<String> keySet, Collection<Object> values) {
-
-        return "";
+    private String genUpsertSql(String tableName, Set<String> keys, Collection<Object> values) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("upsert into ")
+                .append(HbaseConfig.HBASE_SCHEMA).append(".").append(tableName)
+                .append("(")
+                .append(StringUtils.join(",", keys))
+                .append(")")
+                .append("values")
+                .append("(")
+                .append(StringUtils.join(",", values))
+                .append(")");
+        return buffer.toString();
     }
 }
