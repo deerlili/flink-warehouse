@@ -14,7 +14,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 /**
  * @author lixx
  * @date 2022/6/8
- * @notes ods flink cdc
  */
 public class FlinkCDC {
     public static void main(String[] args) throws Exception {
@@ -28,9 +27,9 @@ public class FlinkCDC {
                 .port(3306)
                 .username("test")
                 .password("123456")
-                .databaseList("gmall_flink,hive")
+                .databaseList("gmall_flink")
                 .scanNewlyAddedTableEnabled(true)
-                .tableList("gmall_flink.*,hive.f1")
+                .tableList("gmall_flink.*")
                 .startupOptions(StartupOptions.latest())
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();

@@ -99,6 +99,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!--ERROR:com.google.protobuf.LiteralByteString-->
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>2.5.0</version>
+        </dependency>
         <!--Flink 默认使用的是 slf4j 记录日志，相当于一个日志的接口,这里使用 log4j 作为具体的日志实现-->
         <!--<dependency>
             <groupId>org.slf4j</groupId>

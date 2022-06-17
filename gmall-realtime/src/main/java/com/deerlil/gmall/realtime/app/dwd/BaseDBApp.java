@@ -38,15 +38,15 @@ public class BaseDBApp {
         // 1.获取执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // 1.1.设置CK和状态后端
-        //env.setStateBackend(new FsStateBackend("hdfs://hadoop100:9000/gmall-flink/dwd_log/ck"));
-        //System.setProperty("HADOOP_USER_NAME","root");
+        env.setStateBackend(new FsStateBackend("hdfs://hadoop100:9000/gmall-flink/dwd_log/ck"));
+        System.setProperty("HADOOP_USER_NAME","root");
 
-        //env.enableCheckpointing(5000L);
-        //env.getCheckpointConfig().setCheckpointTimeout(10000L);
-        //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
-        //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
-        //env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        env.enableCheckpointing(5000L);
+        env.getCheckpointConfig().setCheckpointTimeout(10000L);
+        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
+        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         // 2.消费Kafka(ods_base_db)主题，主题数据创建流
         String topic = "ods_base_db";
@@ -78,6 +78,7 @@ public class BaseDBApp {
                 return !"d".equals(op);
             }
         });
+
         // 4.flinkCDC消费配置表并处理成-广播流(另外一个MySQL)
         MySqlSource<String> mySqlConfigBuilder = new MySqlSourceBuilder<String>()
                 .hostname("hadoop100")
@@ -96,7 +97,7 @@ public class BaseDBApp {
         BroadcastStream<String> broadcast = mysqlConfigDs.broadcast(mapStateDescriptor);
 
         // 5.连接主流和广播流
-        BroadcastConnectedStream<JSONObject, String>  connectedStream = filterDS.connect(broadcast);
+        BroadcastConnectedStream<JSONObject, String> connectedStream = filterDS.connect(broadcast);
 
         // 6.分流处理数据-广播流数据、主流数据(根据广播流数据进行处理)
         OutputTag<JSONObject> hbaseTag = new OutputTag<JSONObject>("hbase-tag") {};

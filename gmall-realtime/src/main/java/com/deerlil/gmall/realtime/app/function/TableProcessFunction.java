@@ -65,7 +65,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         }
 
         BroadcastState<String, TableProcess> broadcastState = context.getBroadcastState(mapStateDescriptor);
-        String key = tableProcess.getSinkTable() + "-" + tableProcess.getOperateType();
+        String key = tableProcess.getSourceTable() + "-" + tableProcess.getOperateType();
         broadcastState.put(key, tableProcess);
         
     }
@@ -76,11 +76,11 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         PreparedStatement preparedStatement = null;
 
         try {
-            if (sinkPk.isEmpty()) {
+            if (sinkPk == null) {
                 sinkPk = "id";
             }
 
-            if (sinkExtend.isEmpty()) {
+            if (sinkExtend == null) {
                 sinkExtend = "";
             }
 
@@ -106,7 +106,6 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
 
             // 预编译SQL
             preparedStatement = connection.prepareStatement(tableTableSQL.toString());
-
             // 执行
             preparedStatement.execute();
         } catch (SQLException e) {
@@ -136,7 +135,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         // 1.获取状态数据
         ReadOnlyBroadcastState<String, TableProcess> broadcastState = readOnlyContext.getBroadcastState(mapStateDescriptor);
         JSONObject source = jsonObject.getJSONObject("source");
-        String key = source.getString("db") + "-" + source.getString("table");
+        String key = source.getString("table") + "-" + jsonObject.getString("op");
         TableProcess tableProcess = broadcastState.get(key);
 
         if (tableProcess != null) {
