@@ -1,7 +1,7 @@
 package com.deerlil.gmall.realtime.app.dwd;
 
 import com.alibaba.fastjson.JSONObject;
-import com.deerlil.gmall.realtime.app.function.DimSink;
+import com.deerlil.gmall.realtime.app.function.DimSinkFunction;
 import com.deerlil.gmall.realtime.app.function.TableProcessFunction;
 import com.deerlil.gmall.realtime.bean.TableProcess;
 import com.deerlil.gmall.realtime.utils.KafkaUtil;
@@ -22,14 +22,19 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
-import org.apache.flink.streaming.api.functions.co.BroadcastProcessFunction;
+import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author lixx
  * @date 2022/6/11
  * @notes flink cdc dwd db
+ *
+ * 数据流：web/app -> nginx -> springboot -> mysql -> FlinkApp -> Kafka(ods) -> FlinkApp -> kafka(dwd)/Phoenix(dim)
+ * 程 序：mockDb -> mysql -> FlinkCDCApp -> kafka(ZK) -> BaseDBApp -> Kafka/Phoenix(Hbase,zk,hdfs)
  */
 public class BaseDBApp {
 
@@ -111,8 +116,13 @@ public class BaseDBApp {
         hbase.print("hbase>>>");
         kafka.print("kafka>>>");
         // zk hdfs hbase kafka
-
-        hbase.addSink(new DimSink());
+        hbase.addSink(new DimSinkFunction());
+        kafka.addSink(KafkaUtil.getKafkaProducer(new KafkaSerializationSchema<JSONObject>() {
+            @Override
+            public ProducerRecord<byte[], byte[]> serialize(JSONObject jsonObject, @Nullable Long aLong) {
+                return new ProducerRecord<>(jsonObject.getString("sinkTable"), jsonObject.getString("after").getBytes());
+            }
+        }));
 
         // 9.启动任务
         env.execute("dwd_db_base_app");

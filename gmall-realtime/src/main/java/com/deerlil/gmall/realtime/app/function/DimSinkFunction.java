@@ -19,9 +19,8 @@ import java.util.Set;
  * @date 2022/6/13
  * @notes hbase upsert dim data
  */
-public class DimSink extends RichSinkFunction<JSONObject> {
-
-    private static final long serialVersionUID = 1905122041950251207L;
+@Slf4j
+public class DimSinkFunction extends RichSinkFunction<JSONObject> {
 
     private Connection connection;
 
@@ -30,6 +29,7 @@ public class DimSink extends RichSinkFunction<JSONObject> {
         // 初始化Phoenix连接
         Class.forName(HbaseConfig.PHOENIX_DRIVER);
         connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
+        // connection.setAutoCommit(true); = connection.commit();
     }
 
     @Override
@@ -52,7 +52,7 @@ public class DimSink extends RichSinkFunction<JSONObject> {
             // 提交
             connection.commit();
         } catch (SQLException e) {
-            System.out.println("插入Phoenix数据失败"+e.getMessage());
+            log.error("插入Phoenix数据失败"+e.getMessage());
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();
