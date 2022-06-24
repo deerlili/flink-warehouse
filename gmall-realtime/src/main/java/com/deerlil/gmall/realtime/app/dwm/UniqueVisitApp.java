@@ -5,8 +5,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.deerlil.gmall.realtime.utils.KafkaUtil;
 import com.mysql.cj.util.StringUtils;
 import org.apache.flink.api.common.functions.RichFilterFunction;
+import org.apache.flink.api.common.state.StateTtlConfig;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -22,6 +24,9 @@ import java.text.SimpleDateFormat;
  *
  * @author lixx
  * @date 2022/6/24 17:00
+ *
+ * 数据流：web/app -> Nginx -> SpringBoot -> Kafka（ods）-> FlinkApp -> Kafka（dwd) -> FlinkApp -> Kafka（dwm)
+ * 程 序：mockLog -> Nginx -> Logger.sh -> Kafka（zk）-> BaseLogApp -> Kafka  -> UniqueVisitApp -> Kafka
  */
 public class UniqueVisitApp {
 
@@ -56,14 +61,17 @@ public class UniqueVisitApp {
         SingleOutputStreamOperator<JSONObject> uvDS = keyedStream.filter(new RichFilterFunction<JSONObject>() {
             private ValueState<String> dateState;
             private SimpleDateFormat simpleDateFormat;
-
             @Override
             public void open(Configuration parameters) throws Exception {
                 ValueStateDescriptor<String> valueStateDescriptor = new ValueStateDescriptor<>("date-state", String.class);
+                // 设置状态的超时时间以及更新时间的方式
+                StateTtlConfig stateTtlConfig = StateTtlConfig.newBuilder(Time.days(1))
+                        .setUpdateType(StateTtlConfig.UpdateType.OnCreateAndWrite)
+                        .build();
+                valueStateDescriptor.enableTimeToLive(stateTtlConfig);
                 dateState = getRuntimeContext().getState(valueStateDescriptor);
                 simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             }
-
             @Override
             public boolean filter(JSONObject jsonObject) throws Exception {
                 // 获取上一条页面信息
