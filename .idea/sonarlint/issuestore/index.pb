@@ -13,3 +13,13 @@ F
 Ygmall-realtime/src/main/java/com/deerlil/gmall/realtime/app/function/DimSinkFunction.java,3\f\3faeadd276561518d6cfeada19a0214232f02703
 ~
 Ngmall-realtime/src/main/java/com/deerlil/gmall/realtime/app/dwd/BaseDBApp.java,5\9\59555a062743c77f0e2d339aa9251af7b949b017
+z
+Jgmall-cdc/src/main/java/com/deerlil/gmall/realtime/MySqlBinlogExample.java,d\0\d005c4968bb289b847785967d4e87cc4c666e22d
+~
+Ngmall-cdc/src/main/java/com/deerlil/gmall/realtime/MySqlBinlogExampleTest.java,8\5\8582729d6335e3e87341d814b33ba0a6c7d3da79
+|
+Lgmall-realtime/src/main/java/com/deerlil/gmall/realtime/utils/KafkaUtil.java,0\0\00b6c0af873b74ab0085a3db7227c744b1820492
+|
+Lgmall-realtime/src/main/java/com/deerlil/gmall/realtime/utils/MySqlUtil.java,6\b\6b873a8d7b03d861c3d3c3b4ec81e1206fac6221
+
+Ogmall-realtime/src/main/java/com/deerlil/gmall/realtime/common/HbaseConfig.java,9\b\9b669c06ca1df9f803c7afdf80145d3369ce1546

@@ -126,7 +126,7 @@ public class BaseLogApp {
                     collector.collect(jsonObject.toJSONString());
                     // 取出数据中的曝光数据
                     JSONArray displays = jsonObject.getJSONArray("displays");
-                    if (!displays.isEmpty()) {
+                    if (displays != null && displays.size() > 0) {
                         // 获取页面ID
                         String pageId = jsonObject.getJSONObject("page").getString("page_id");
                         for (int i = 0; i < displays.size(); i++) {

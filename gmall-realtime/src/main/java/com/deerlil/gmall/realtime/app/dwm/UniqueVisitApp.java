@@ -41,14 +41,14 @@ public class UniqueVisitApp {
      */
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
         env.setParallelism(1);
-        env.setStateBackend(new FsStateBackend("HDFS://hadoop100:9000/flink/ck"));
-        env.enableCheckpointing(5000L);
-        env.getCheckpointConfig().setCheckpointTimeout(10000L);
-        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
+
+        //env.setStateBackend(new FsStateBackend("HDFS://hadoop100:9000/flink/ck"));
+        //env.enableCheckpointing(5000L);
+        //env.getCheckpointConfig().setCheckpointTimeout(10000L);
+        //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+        //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
+        //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
 
         String groupId = "unique_visit_app";
         String sourceTopic = "dwd_page_log";
