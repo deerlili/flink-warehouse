@@ -38,6 +38,7 @@ public class UniqueVisitApp {
      */
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // 生产环境和kafka分区数保持一致
         env.setParallelism(1);
 
         //env.setStateBackend(new FsStateBackend("HDFS://hadoop100:9000/flink/ck"));

@@ -41,6 +41,16 @@
             <artifactId>flink-streaming-java_${scala.version}</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-cep_${scala.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-json</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
         <!--Flink SQL依赖-->
         <dependency>
             <groupId>org.apache.flink</groupId>
