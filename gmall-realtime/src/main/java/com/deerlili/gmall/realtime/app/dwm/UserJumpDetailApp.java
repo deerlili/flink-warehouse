@@ -28,6 +28,9 @@ import java.util.Map;
  *
  * @author lixx
  * @date 2022/7/8 15:41
+ *
+ * 数据流：web/app -> Nginx -> SpringBoot -> Kafka（ods）-> FlinkApp -> Kafka（dwd) -> FlinkApp -> kafka -> kafka(dwm)
+ * 程 序：mockLog -> Nginx -> Logger.sh -> Kafka（zk）-> BaseLogApp -> Kafka -> UserJumpDetailApp -> kafka
  */
 public class UserJumpDetailApp {
 
@@ -80,6 +83,18 @@ public class UserJumpDetailApp {
                 return lastPageId == null || lastPageId.length() <= 0;
             }
         }).within(Time.seconds(10));
+
+        // 5.使用循环模式定义模式系列（上面前后过滤条件完全一样可以改为循环模式）
+        //Pattern.<JSONObject>begin("start").where(new SimpleCondition<JSONObject>() {
+        //    @Override
+        //    public boolean filter(JSONObject value) throws Exception {
+        //        String lastPageId = value.getJSONObject("page").getString("last_page_id");
+        //        return lastPageId == null || lastPageId.length() <= 0;
+        //    }
+        //})
+        //        .times(2)
+        //        .consecutive() //指定严格近邻（next）,不加相当于上面next改为followedBy
+        //        .within(Time.seconds(10));
 
         // 6.将模式作用到流上
         PatternStream<JSONObject> patternStream =
