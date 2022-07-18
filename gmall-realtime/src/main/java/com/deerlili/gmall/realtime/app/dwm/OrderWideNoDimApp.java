@@ -1,20 +1,20 @@
 package com.deerlili.gmall.realtime.app.dwm;
 
-import com.alibaba.fastjson.JSON;
-import com.deerlili.gmall.realtime.bean.OrderDetail;
-import com.deerlili.gmall.realtime.bean.OrderInfo;
-import com.deerlili.gmall.realtime.bean.OrderWide;
-import com.deerlili.gmall.realtime.utils.KafkaUtil;
+import java.text.SimpleDateFormat;
+
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 
-import java.text.SimpleDateFormat;
+import com.alibaba.fastjson.JSON;
+import com.deerlili.gmall.realtime.bean.OrderDetail;
+import com.deerlili.gmall.realtime.bean.OrderInfo;
+import com.deerlili.gmall.realtime.bean.OrderWide;
+import com.deerlili.gmall.realtime.utils.KafkaUtil;
 
 /**
  * OrderWideApp 订单宽表 two-stream join
@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat;
  * @author lixx
  * @date 2022/7/18 10:38
  */
-public class OrderWideApp {
+public class OrderWideNoDimApp {
     public static void main(String[] args) throws Exception {
         //1.执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -91,18 +91,12 @@ public class OrderWideApp {
 
         orderWideWithNoDimDS.print("orderWideWithNoDimDS>>>");
 
+        /*
+        * 测试：启动zk,kafka,hdfs,hbase,mock_db
+        * 程序：ods(FlinkCDCApp),BaseDBApp,OrderWideApp
+        * */
+
         //4.关联维度信息
-        orderWideWithNoDimDS.map(orderWide -> {
-            //用户维度
-            Long userId = orderWide.getUser_id();
-            //根据userId查询hbase表
-            //地区
-            //SPU
-            //SDU
-            //将数据补充至orderWide
-            //返回结果
-            return orderWide;
-        });
 
         //5.将数据写入kafka
 
