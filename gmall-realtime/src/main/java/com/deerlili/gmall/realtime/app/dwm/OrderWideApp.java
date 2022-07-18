@@ -91,6 +91,11 @@ public class OrderWideApp {
 
         orderWideWithNoDimDS.print("orderWideWithNoDimDS>>>");
 
+        /*
+        * 测试：启动zk,kafka,hdfs,hbase,mock_db
+        * 程序：ods(FlinkCDCApp),BaseDBApp,OrderWideApp
+        * */
+
         //4.关联维度信息
 
         //5.将数据写入kafka
