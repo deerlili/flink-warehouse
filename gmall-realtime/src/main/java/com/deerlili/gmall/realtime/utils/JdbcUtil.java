@@ -1,6 +1,7 @@
 package com.deerlili.gmall.realtime.utils;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,8 +12,8 @@ import java.util.List;
  **/
 
 public class JdbcUtil {
-    public static <T> List<T> queryList(Connection connection, String querySql, Class<T> cls,
-        boolean underScoreToCamel) {
-
+    public static <T> List<T> queryList(Connection connection, String querySql, Class<T> cls, boolean underScoreToCamel) {
+        ArrayList<T> ts = new ArrayList<>();
+        return ts;
     }
 }
