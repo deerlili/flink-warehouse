@@ -11,7 +11,9 @@ import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.api.common.state.MapStateDescriptor;
+import org.apache.flink.api.common.time.Time;
 import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.BroadcastConnectedStream;
@@ -26,7 +28,8 @@ import org.apache.flink.streaming.connectors.kafka.KafkaSerializationSchema;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nullable;
 
 /**
  * @author lixx
@@ -42,21 +45,25 @@ public class BaseDBApp {
 
         // 1.获取执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
         // 1.1.设置CK和状态后端
-        env.setStateBackend(new FsStateBackend("hdfs://hadoop100:9000/gmall-flink/dwd_log/ck"));
-        System.setProperty("HADOOP_USER_NAME","root");
-
-        env.enableCheckpointing(5000L);
-        env.getCheckpointConfig().setCheckpointTimeout(10000L);
-        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
-        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        //env.setStateBackend(new FsStateBackend("hdfs://hadoop100:9000/gmall-flink/dwd_log/ck-1"));
+        //System.setProperty("HADOOP_USER_NAME","root");
+        //
+        //env.enableCheckpointing(5000L);
+        //env.getCheckpointConfig().setCheckpointTimeout(10000L);
+        //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+        //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
+        //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
+        //env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, Time.seconds(10)));
 
         // 2.消费Kafka(ods_base_db)主题，主题数据创建流
         String topic = "ods_base_db";
         String groupId = "base_db_app";
         DataStreamSource<String> kafkaDs = env.addSource(KafkaUtil.getKafkaConsumer(topic, groupId));
+
+        kafkaDs.print("ods>>>");
         // 2.1.脏数据处理,并每行数据转换为Json对象
         OutputTag<String> dirtyTag = new OutputTag<String>("Dirty") {};
         SingleOutputStreamOperator<JSONObject> jsonDs = kafkaDs.process(new ProcessFunction<String, JSONObject>() {
@@ -73,6 +80,7 @@ public class BaseDBApp {
         });
         // 2.2.脏数据打印
         jsonDs.getSideOutput(dirtyTag).print("dirty>>>");
+        jsonDs.print("jsonDs>>>");
         // 2.1和2.2 可以替换 kafkaDS.map(JSON::parseObject);
         // 3.过滤(delete)数据-主流
         SingleOutputStreamOperator<JSONObject> filterDS = jsonDs.filter(new FilterFunction<JSONObject>() {
@@ -83,6 +91,8 @@ public class BaseDBApp {
                 return !"d".equals(op);
             }
         });
+
+        filterDS.print("filterDS>>>");
 
         // 4.flinkCDC消费配置表并处理成-广播流(另外一个MySQL)
         MySqlSource<String> mySqlConfigBuilder = new MySqlSourceBuilder<String>()
