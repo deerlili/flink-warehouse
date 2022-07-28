@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2022/6/11 23:57
  **/
 
-@Slf4j
 public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, String, JSONObject> {
 
     private OutputTag<JSONObject> hbaseTag;
@@ -60,12 +59,17 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         String after = data.getString("after");
         TableProcess tableProcess = JSON.parseObject(after, TableProcess.class);
 
+        //2.建表
         if (TableProcess.SINK_TYPE_HBASE.equals(tableProcess.getSinkType())) {
-            checkTable(tableProcess.getSinkTable(),tableProcess.getSinkColumns(),tableProcess.getSinkPk(),tableProcess.getSinkExtend());
+            checkTable(tableProcess.getSinkTable()
+                    ,tableProcess.getSinkColumns()
+                    ,tableProcess.getSinkPk()
+                    ,tableProcess.getSinkExtend());
         }
-
+        //3.写入状态，广播出去
         BroadcastState<String, TableProcess> broadcastState = context.getBroadcastState(mapStateDescriptor);
         String key = tableProcess.getSourceTable() + "-" + tableProcess.getOperateType();
+        System.out.println("广播出去key"+key);
         broadcastState.put(key, tableProcess);
         
     }
@@ -102,14 +106,14 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
                 }
             }
             tableTableSQL.append(")").append(sinkExtend);
-            log.info(tableTableSQL.toString());
+            System.out.println(tableTableSQL.toString());
 
             // 预编译SQL
             preparedStatement = connection.prepareStatement(tableTableSQL.toString());
             // 执行
             preparedStatement.execute();
+            System.out.println("Phoenix表"+sinkTable+"建表成功！");
         } catch (SQLException e) {
-            log.error(String.valueOf(e));
             throw new RuntimeException("Phoenix表"+sinkTable+"建表异常！");
         } finally {
             if (preparedStatement != null) {
@@ -136,6 +140,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         ReadOnlyBroadcastState<String, TableProcess> broadcastState = readOnlyContext.getBroadcastState(mapStateDescriptor);
         JSONObject source = jsonObject.getJSONObject("source");
         String key = source.getString("table") + "-" + jsonObject.getString("op");
+
         TableProcess tableProcess = broadcastState.get(key);
 
         if (tableProcess != null) {
@@ -156,7 +161,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
                 readOnlyContext.output(hbaseTag,jsonObject);
             }
         } else {
-            log.warn("该组合不存在，Key为{}：", key);
+            System.out.println("该组合Key：" + key + "不存在！");
         }
     }
 

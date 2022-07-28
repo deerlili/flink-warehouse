@@ -19,7 +19,6 @@ import java.util.Set;
  * @date 2022/6/13
  * @notes hbase upsert dim data
  */
-@Slf4j
 public class DimSinkFunction extends RichSinkFunction<JSONObject> {
 
     private Connection connection;
@@ -29,7 +28,7 @@ public class DimSinkFunction extends RichSinkFunction<JSONObject> {
         // 初始化Phoenix连接
         Class.forName(HbaseConfig.PHOENIX_DRIVER);
         connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
-        // connection.setAutoCommit(true); = connection.commit();
+        connection.setAutoCommit(true);
     }
 
     @Override
@@ -45,14 +44,13 @@ public class DimSinkFunction extends RichSinkFunction<JSONObject> {
             String tableName = value.getString("sinkTable");
             // 创建插入数据的SQL
             String upsertSql = genUpsertSql(tableName, keySet, values);
+            System.out.println(upsertSql);
             // 编译
             preparedStatement = connection.prepareStatement(upsertSql);
             // 执行
             preparedStatement.executeUpdate();
-            // 提交
-            connection.commit();
         } catch (SQLException e) {
-            log.error("插入Phoenix数据失败"+e.getMessage());
+            e.printStackTrace();
         } finally {
             if (preparedStatement != null) {
                 preparedStatement.close();
@@ -61,17 +59,21 @@ public class DimSinkFunction extends RichSinkFunction<JSONObject> {
     }
 
     private String genUpsertSql(String tableName, Set<String> keys, Collection<Object> values) {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("upsert into ")
-                .append(HbaseConfig.HBASE_SCHEMA).append(".").append(tableName)
-                .append("(")
-                .append(StringUtils.join(keys,","))
-                .append(")")
-                .append(" values")
-                .append("('")
-                .append(StringUtils.join(values,"','"))
-                .append("')");
-        System.out.println(buffer.toString());
-        return buffer.toString();
+        //StringBuffer buffer = new StringBuffer();
+        //buffer.append("upsert into ")
+        //        .append(HbaseConfig.HBASE_SCHEMA).append(".").append(tableName)
+        //        .append("(")
+        //        .append(StringUtils.join(keys,","))
+        //        .append(")")
+        //        .append(" values")
+        //        .append("('")
+        //        .append(StringUtils.join(values,"','"))
+        //        .append("')");
+        //return buffer.toString();
+
+        return "upsert into " + HbaseConfig.HBASE_SCHEMA + "." + tableName + "(" +
+                StringUtils.join(keys, ",") + ") values('" +
+                StringUtils.join(values, "','") + "')";
+
     }
 }
