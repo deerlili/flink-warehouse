@@ -15,3 +15,9 @@ D
 gmall-logger/pom.xml,7\5\75a81edf8a6392af3b55116e990096e808e6440a
 A
 gmall-cdc/pom.xml,3\9\390943b0c6f4c4d3896993cb634487323b1da338
+Å
+Qgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/ods/FlinkCDCApp.java,3\6\36acd5e9efb8140d87bacd1a8f667ed88ce8eef9
+
+Ogmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/TableProcess.java,0\e\0e5e15504194a26e01672fdc3cf76d6362e34f45
+
+Ogmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwd/BaseDBApp.java,0\f\0f5e763be29ebde53bca30f51f3cbe9d9dc0d15a
