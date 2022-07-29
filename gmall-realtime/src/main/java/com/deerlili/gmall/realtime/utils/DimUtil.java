@@ -17,11 +17,11 @@ import java.util.List;
  */
 public class DimUtil {
 
-    public static JSONObject getDimInfo(Connection connection, String tableName, String columnName,String value) throws Exception {
+    public static JSONObject getDimInfo(Connection connection, String tableName,String id) throws Exception {
         //查询Phoenix之前先查Redis
         Jedis jedis = RedisUtil.getJedis();
-        //DIM:DIM_USER_INFO:ID:143
-        String redisKey = "DIM:" + tableName + ":" + columnName + ":" + value;
+        //DIM:DIM_USER_INFO:143
+        String redisKey = "DIM:" + tableName  + ":" + id;
         String dimInfo = jedis.get(redisKey);
         if (dimInfo != null) {
             //重置过期时间
@@ -33,7 +33,7 @@ public class DimUtil {
         }
 
         // 拼接查询语句
-        String querySql = "select * from " + HbaseConfig.HBASE_SCHEMA + "." + tableName + " where " + columnName +"='"+ value +"'";
+        String querySql = "select * from " + HbaseConfig.HBASE_SCHEMA + "." + tableName + " where id = '"+ id +"'";
         System.out.println(querySql);
         // 查询Phoenix
         List<JSONObject> queryList = JdbcUtil.queryList(connection, querySql, JSONObject.class, false);
@@ -48,10 +48,10 @@ public class DimUtil {
         return dimInfoJson;
     }
 
-    public static void delRedisDimInfo(String tableName, String columnName,String value) {
+    public static void delRedisDimInfo(String tableName,String id) {
         Jedis jedis = RedisUtil.getJedis();
         //DIM:DIM_USER_INFO:ID:143
-        String redisKey = "DIM:" + tableName + ":" + columnName + ":" + value;
+        String redisKey = "DIM:" + tableName  + ":" + id;
         jedis.del(redisKey);
         jedis.close();
     }
@@ -60,10 +60,10 @@ public class DimUtil {
         Class.forName(HbaseConfig.PHOENIX_DRIVER);
         Connection connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
         long start = System.currentTimeMillis();
-        JSONObject dimInfo = getDimInfo(connection, "DIM_WARE_SKU", "ID", "29");
+        JSONObject dimInfo = getDimInfo(connection, "DIM_WARE_SKU", "29");
         System.out.println(dimInfo);
         long end = System.currentTimeMillis();
-        JSONObject dimInfo1 = getDimInfo(connection, "DIM_WARE_SKU", "ID", "29");
+        JSONObject dimInfo1 = getDimInfo(connection, "DIM_WARE_SKU", "29");
         System.out.println(dimInfo1);
         long end1 = System.currentTimeMillis();
         System.out.println(end-start);
