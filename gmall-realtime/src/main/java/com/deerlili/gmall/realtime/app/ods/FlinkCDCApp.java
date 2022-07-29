@@ -25,10 +25,6 @@ public class FlinkCDCApp {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        //Map config = new HashMap();
-        //config.put(JsonConverterConfig.DECIMAL_FORMAT_CONFIG, DecimalFormat.NUMERIC.name());
-        //JsonDebeziumDeserializationSchema jdd = new JsonDebeziumDeserializationSchema(false, config);
-
         Properties properties = new Properties();
         properties.put("decimal.handling.mode", "string");
         /**
