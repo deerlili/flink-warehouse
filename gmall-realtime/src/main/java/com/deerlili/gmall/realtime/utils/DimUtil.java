@@ -31,8 +31,24 @@ public class DimUtil {
     public static void main(String[] args) throws Exception {
         Class.forName(HbaseConfig.PHOENIX_DRIVER);
         Connection connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
+        long start = System.currentTimeMillis();
         JSONObject dimInfo = getDimInfo(connection, "DIM_WARE_SKU", "ID", "29");
         System.out.println(dimInfo);
+        long end = System.currentTimeMillis();
+        JSONObject dimInfo1 = getDimInfo(connection, "DIM_WARE_SKU", "ID", "29");
+        System.out.println(dimInfo1);
+        long end1 = System.currentTimeMillis();
+        System.out.println(end-start);
+        System.out.println(end1-end);
         connection.close();
+        /**
+         * select * from REALTIME.DIM_WARE_SKU where ID='29'
+         * {"SKU_ID":"29","ID":"29"}
+         * select * from REALTIME.DIM_WARE_SKU where ID='29'
+         * {"SKU_ID":"29","ID":"29"}
+         * 307
+         * 11
+         * Hbase 有客户端缓存，第二次查比第一次查快，那么需要优化
+         */
     }
 }
