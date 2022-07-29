@@ -43,8 +43,9 @@ public class OrderWideApp {
         String groupId = "order_wide_group";
 
         SingleOutputStreamOperator<OrderInfo> orderInfoDS = env.addSource(KafkaUtil.getKafkaConsumer(orderInfoSourceTopic, groupId)).map(line -> {
+            //将JSON字符串转换为JavaBean
             OrderInfo orderInfo = JSON.parseObject(line, OrderInfo.class);
-
+            //取出创建时间字段,按照空格分割
             String[] dateTimeArr = orderInfo.getCreate_time().split(" ");
             orderInfo.setCreate_date(dateTimeArr[0]);
             orderInfo.setCreate_hour(dateTimeArr[1].split(":")[0]);
@@ -77,10 +78,10 @@ public class OrderWideApp {
                         }));
 
 
-        //3.双流JOIN
+        //3.双流JOIN,状态编程
         SingleOutputStreamOperator<OrderWide> orderWideWithNoDimDS = orderInfoDS.keyBy(OrderInfo::getId)
                 .intervalJoin(orderDetailDS.keyBy(OrderDetail::getOrder_id))
-                //生产环境给最大延迟时间
+                //生产环境,为了不丢数据,设置时间 为最大网络延迟
                 .between(Time.seconds(-5), Time.seconds(5))
                 .process(new ProcessJoinFunction<OrderInfo, OrderDetail, OrderWide>() {
                     @Override
@@ -98,7 +99,7 @@ public class OrderWideApp {
             //根据userId查询hbase表
             //地区
             //SPU
-            //SDU
+            //SKU
             //将数据补充至orderWide
             //返回结果
             return orderWide;

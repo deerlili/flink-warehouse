@@ -47,8 +47,6 @@ public class OrderWideNoDimApp {
 
         DataStreamSource<String> stringDataStreamSource = env.addSource(KafkaUtil.getKafkaConsumer(orderInfoSourceTopic, groupId));
 
-
-
         SingleOutputStreamOperator<OrderInfo> orderInfoDS = stringDataStreamSource.map(line -> {
             OrderInfo orderInfo = JSON.parseObject(line, OrderInfo.class);
 
