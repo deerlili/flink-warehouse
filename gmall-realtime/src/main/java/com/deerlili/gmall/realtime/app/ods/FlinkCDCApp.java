@@ -7,6 +7,12 @@ import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.kafka.connect.json.DecimalFormat;
+import org.apache.kafka.connect.json.JsonConverterConfig;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author lixx
@@ -19,6 +25,18 @@ public class FlinkCDCApp {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
+        //Map config = new HashMap();
+        //config.put(JsonConverterConfig.DECIMAL_FORMAT_CONFIG, DecimalFormat.NUMERIC.name());
+        //JsonDebeziumDeserializationSchema jdd = new JsonDebeziumDeserializationSchema(false, config);
+
+        Properties properties = new Properties();
+        properties.put("decimal.handling.mode", "string");
+        /**
+         * precise 以java中的精确类型来表示值
+         * double  使用比较容易，但是会造成精度损失
+         * string  也比较容易使用，但是会造成字段语意信息丢失
+         */
+
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
                 .hostname("hadoop100")
                 .port(3306)
@@ -26,8 +44,9 @@ public class FlinkCDCApp {
                 .password("123456")
                 .databaseList("gmall_flink")
                 .scanNewlyAddedTableEnabled(true)
-                .tableList("gmall_flink.*")
+                .tableList("gmall_flink.order_info,gmall_flink.order_detail")
                 .startupOptions(StartupOptions.latest())
+                .debeziumProperties(properties)
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();
 
@@ -53,7 +72,7 @@ public class FlinkCDCApp {
         streamSource.print();
 
         // 数据写入Kafka
-       streamSource.addSink(KafkaUtil.getKafkaProducer("ods_base_db"));
+        streamSource.addSink(KafkaUtil.getKafkaProducer("ods_base_db"));
 
         env.execute("MySQL Binlog + Kafka");
     }
