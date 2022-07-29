@@ -103,12 +103,8 @@ public class OrderWideApp {
             //返回结果
             return orderWide;
         });
-
         //5.将数据写入kafka
-
         //6.启动
         env.execute("orderWideApp");
-
     }
-
 }

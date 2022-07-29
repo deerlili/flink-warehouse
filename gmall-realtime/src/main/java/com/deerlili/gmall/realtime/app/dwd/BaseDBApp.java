@@ -63,7 +63,6 @@ public class BaseDBApp {
         String groupId = "base_db_app";
         DataStreamSource<String> kafkaDs = env.addSource(KafkaUtil.getKafkaConsumer(topic, groupId));
 
-        kafkaDs.print("ods>>>");
         // 2.1.脏数据处理,并每行数据转换为Json对象
         OutputTag<String> dirtyTag = new OutputTag<String>("Dirty") {};
         SingleOutputStreamOperator<JSONObject> jsonDs = kafkaDs.process(new ProcessFunction<String, JSONObject>() {
@@ -80,7 +79,6 @@ public class BaseDBApp {
         });
         // 2.2.脏数据打印
         jsonDs.getSideOutput(dirtyTag).print("dirty>>>");
-        jsonDs.print("jsonDs>>>");
         // 2.1和2.2 可以替换 kafkaDS.map(JSON::parseObject);
         // 3.过滤(delete)数据-主流
         SingleOutputStreamOperator<JSONObject> filterDS = jsonDs.filter(new FilterFunction<JSONObject>() {
@@ -92,7 +90,6 @@ public class BaseDBApp {
             }
         });
 
-        filterDS.print("filterDS>>>");
 
         // 4.flinkCDC消费配置表并处理成-广播流(另外一个MySQL)
         MySqlSource<String> mySqlConfigBuilder = new MySqlSourceBuilder<String>()

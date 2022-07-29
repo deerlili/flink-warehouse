@@ -69,7 +69,6 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
         //3.写入状态，广播出去
         BroadcastState<String, TableProcess> broadcastState = context.getBroadcastState(mapStateDescriptor);
         String key = tableProcess.getSourceTable() + "-" + tableProcess.getOperateType();
-        System.out.println("广播出去key"+key);
         broadcastState.put(key, tableProcess);
         
     }
@@ -106,13 +105,10 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
                 }
             }
             tableTableSQL.append(")").append(sinkExtend);
-            System.out.println(tableTableSQL.toString());
-
             // 预编译SQL
             preparedStatement = connection.prepareStatement(tableTableSQL.toString());
             // 执行
             preparedStatement.execute();
-            System.out.println("Phoenix表"+sinkTable+"建表成功！");
         } catch (SQLException e) {
             throw new RuntimeException("Phoenix表"+sinkTable+"建表异常！");
         } finally {

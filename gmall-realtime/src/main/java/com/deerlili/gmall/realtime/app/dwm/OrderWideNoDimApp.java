@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
@@ -35,6 +37,7 @@ public class OrderWideNoDimApp {
         //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
         //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
+        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, org.apache.flink.api.common.time.Time.seconds(10)));
 
         //2.读取kafka主题数据，并转换JavaBean对象&提取时间戳生成WaterMark
         String orderInfoSourceTopic = "dwd_order_info";
@@ -42,7 +45,11 @@ public class OrderWideNoDimApp {
         String orderWideSinkTopic = "dwm_order_wide";
         String groupId = "order_wide_group";
 
-        SingleOutputStreamOperator<OrderInfo> orderInfoDS = env.addSource(KafkaUtil.getKafkaConsumer(orderInfoSourceTopic, groupId)).map(line -> {
+        DataStreamSource<String> stringDataStreamSource = env.addSource(KafkaUtil.getKafkaConsumer(orderInfoSourceTopic, groupId));
+
+
+
+        SingleOutputStreamOperator<OrderInfo> orderInfoDS = stringDataStreamSource.map(line -> {
             OrderInfo orderInfo = JSON.parseObject(line, OrderInfo.class);
 
             String[] dateTimeArr = orderInfo.getCreate_time().split(" ");
@@ -59,6 +66,8 @@ public class OrderWideNoDimApp {
                         return orderInfo.getCreate_ts();
                     }
                 }));
+
+
 
         SingleOutputStreamOperator<OrderDetail> orderDetailDS = env.addSource(KafkaUtil.getKafkaConsumer(orderDetailSourceTopic, groupId))
                 .map(line -> {
