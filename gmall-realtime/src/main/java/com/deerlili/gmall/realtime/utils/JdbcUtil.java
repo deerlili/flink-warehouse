@@ -1,5 +1,7 @@
 package com.deerlili.gmall.realtime.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.deerlili.gmall.realtime.common.HbaseConfig;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -66,8 +68,18 @@ public class JdbcUtil {
         return arrayList;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         String s = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, "aa_dd".toLowerCase());
         System.out.println(s);
+
+        Class.forName(HbaseConfig.PHOENIX_DRIVER);
+        Connection connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
+        List<JSONObject> queryList = queryList(connection, "SELECT * FROM REALTIME.DIM_WARE_SKU", JSONObject.class, true);
+        for (JSONObject jsonObject:queryList) {
+            System.out.println(jsonObject);
+        }
+        connection.close();
+
+
     }
 }
