@@ -1,12 +1,17 @@
 package com.deerlili.gmall.realtime.app.dwm;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.deerlili.gmall.realtime.app.function.DimAsyncFunction;
 import com.deerlili.gmall.realtime.bean.OrderDetail;
 import com.deerlili.gmall.realtime.bean.OrderInfo;
 import com.deerlili.gmall.realtime.bean.OrderWide;
+import com.deerlili.gmall.realtime.utils.DateFormatUtil;
 import com.deerlili.gmall.realtime.utils.KafkaUtil;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
@@ -15,6 +20,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 
 import java.text.SimpleDateFormat;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OrderWideApp 订单宽表 two-stream join
@@ -92,18 +98,33 @@ public class OrderWideApp {
 
         orderWideWithNoDimDS.print("orderWideWithNoDimDS>>>");
 
-        //4.关联维度信息
-        orderWideWithNoDimDS.map(orderWide -> {
-            //用户维度
-            Long userId = orderWide.getUser_id();
-            //根据userId查询hbase表
-            //地区
-            //SPU
-            //SKU
-            //将数据补充至orderWide
-            //返回结果
-            return orderWide;
-        });
+        //4.关联维度信息,这里超时时间大于60S,因为ZK的超时时间的60S
+
+        //4.1.关联用户维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithUserDS = AsyncDataStream.unorderedWait(
+                orderWideWithNoDimDS,
+                new DimAsyncFunction<OrderWide>("DIM_USER_INFO") {
+                    @Override
+                    public String getKey(OrderWide orderWide) {
+                        return orderWide.getUser_id().toString();
+                    }
+
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject dimInfo) {
+                        String birthday = dimInfo.getString("BIRTHDAY");
+                        long birthdayTs = DateFormatUtil.toTs(birthday);
+                        long nowTs = System.currentTimeMillis();
+                        long age = (birthdayTs - nowTs) / (1000 * 60 * 60 * 24 * 365L);
+                        orderWide.setUser_age((int) age);
+                        orderWide.setUser_gender(dimInfo.getString("GENDER"));
+                    }
+                },
+                75,
+                TimeUnit.SECONDS,
+                100);
+
+        orderWideWithUserDS.print("orderWideWithUserDS>>>");
+        //4.2.关联地区维度
         //5.将数据写入kafka
         //6.启动
         env.execute("orderWideApp");
