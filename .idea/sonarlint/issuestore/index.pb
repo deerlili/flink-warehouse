@@ -1,6 +1,4 @@
 
-˜
-hgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/function/CustomerDeserializationSchema.java,5\8\58c31f4eba5a209b0dc591d0315ddf8e64a7e1e4
 Ÿ
 ogmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/function/CustomerDeserializationSchemaAlibaba.java,3\9\399b5e893b521e9c15b527c1eb1aae6316d015fc
 
