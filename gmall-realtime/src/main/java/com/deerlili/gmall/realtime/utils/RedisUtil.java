@@ -31,7 +31,7 @@ public class RedisUtil {
             // 取连接的时候进程测试ping pong
             jedisPoolConfig.setTestOnBorrow(true);
 
-            jedisPool = new JedisPool(jedisPoolConfig, "hadoop102", 6379, 1000);
+            jedisPool = new JedisPool(jedisPoolConfig, "hadoop103", 6379, 1000);
 
             System.out.println("开辟连接池");
 

@@ -49,9 +49,10 @@ public class DimUtil {
     }
 
     public static void delRedisDimInfo(String tableName,String id) {
-        Jedis jedis = RedisUtil.getJedis();
         //DIM:DIM_USER_INFO:ID:143
         String redisKey = "DIM:" + tableName  + ":" + id;
+
+        Jedis jedis = RedisUtil.getJedis();
         jedis.del(redisKey);
         jedis.close();
     }
@@ -60,10 +61,10 @@ public class DimUtil {
         Class.forName(HbaseConfig.PHOENIX_DRIVER);
         Connection connection = DriverManager.getConnection(HbaseConfig.PHOENIX_SERVER);
         long start = System.currentTimeMillis();
-        JSONObject dimInfo = getDimInfo(connection, "DIM_WARE_SKU", "29");
+        JSONObject dimInfo = getDimInfo(connection, "DIM_BASE_TRADEMARK", "30");
         System.out.println(dimInfo);
         long end = System.currentTimeMillis();
-        JSONObject dimInfo1 = getDimInfo(connection, "DIM_WARE_SKU", "29");
+        JSONObject dimInfo1 = getDimInfo(connection, "DIM_BASE_TRADEMARK", "30");
         System.out.println(dimInfo1);
         long end1 = System.currentTimeMillis();
         System.out.println(end-start);
@@ -77,6 +78,20 @@ public class DimUtil {
          * 307
          * 11
          * Hbase 有客户端缓存，第二次查比第一次查快，那么需要优化
+         */
+
+        // 添加redis后测试
+        JSONObject dimInfo2 = getDimInfo(connection, "DIM_BASE_TRADEMARK", "30");
+        System.out.println(dimInfo2);
+        long end2 = System.currentTimeMillis();
+        System.out.println(end2-end1);
+        /**
+         *{"SKU_ID":"29","ID":"29"}
+         * 409
+         * 33
+         * 连接池：0
+         * {"SKU_ID":"29","ID":"29"}
+         * 1
          */
     }
 }
