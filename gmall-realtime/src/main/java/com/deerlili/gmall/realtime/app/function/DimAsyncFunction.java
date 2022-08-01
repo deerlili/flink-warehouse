@@ -11,6 +11,7 @@ import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.text.ParseException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -40,7 +41,7 @@ public abstract class DimAsyncFunction<T> extends RichAsyncFunction<T, T> {
      * @param input
      * @param dimInfo
      */
-    public abstract void join(T input,JSONObject dimInfo);
+    public abstract void join(T input,JSONObject dimInfo) throws ParseException;
 
     @Override
     public void open(Configuration parameters) throws Exception {

@@ -19,7 +19,9 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.Collector;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -112,11 +114,11 @@ public class OrderWideApp {
                     }
 
                     @Override
-                    public void join(OrderWide orderWide, JSONObject dimInfo) {
+                    public void join(OrderWide orderWide, JSONObject dimInfo) throws ParseException {
                         String birthday = dimInfo.getString("BIRTHDAY");
-                        long birthdayTs = DateFormatUtil.toTs(birthday);
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         long nowTs = System.currentTimeMillis();
-                        long age = (birthdayTs - nowTs) / (1000 * 60 * 60 * 24 * 365L);
+                        long age = (format.parse(birthday).getTime() - nowTs) / (1000 * 60 * 60 * 24 * 365L);
                         orderWide.setUser_age((int) age);
                         orderWide.setUser_gender(dimInfo.getString("GENDER"));
                     }
