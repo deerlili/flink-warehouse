@@ -114,7 +114,7 @@ public class OrderWideApp {
                     @Override
                     public void join(OrderWide orderWide, JSONObject dimInfo) {
                         String birthday = dimInfo.getString("BIRTHDAY");
-                        long birthdayTs = DateFormatUtil.toTs(birthday);
+                        long birthdayTs = DateFormatUtil.toTs(birthday,true);
                         long nowTs = System.currentTimeMillis();
                         long age = (birthdayTs - nowTs) / (1000 * 60 * 60 * 24 * 365L);
                         orderWide.setUser_age((int) age);
