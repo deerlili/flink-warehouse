@@ -29,8 +29,17 @@ public abstract class DimAsyncFunction<T> extends RichAsyncFunction<T, T> {
         this.tableName = tableName;
     }
 
+    /**
+     * 获取表的id
+     * @param input
+     * @return id值
+     */
     public abstract String getKey(T input);
-
+    /**
+     * kafkaStream和查询维度信息关联
+     * @param input
+     * @param dimInfo
+     */
     public abstract void join(T input,JSONObject dimInfo);
 
     @Override

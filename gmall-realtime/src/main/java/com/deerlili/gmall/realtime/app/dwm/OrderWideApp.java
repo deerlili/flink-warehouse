@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
  *
  * @author lixx
  * @date 2022/7/18 10:38
+ * 数据流：web/app -> nginx -> springboot -> mysql -> FlinkApp -> Kafka(ods) -> FlinkApp -> kafka(dwd)/Phoenix(dim) -> FlinkApp(redis) -> kafka(dwm)
+ * 程 序：mockDb -> mysql -> FlinkCDCApp -> kafka(ZK) -> BaseDBApp -> Kafka/Phoenix(Hbase,zk,hdfs) -> OrderWideApp(Redis)
  */
 public class OrderWideApp {
     public static void main(String[] args) throws Exception {
