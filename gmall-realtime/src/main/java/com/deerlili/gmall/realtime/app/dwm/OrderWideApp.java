@@ -11,6 +11,7 @@ import com.deerlili.gmall.realtime.utils.KafkaUtil;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -45,6 +46,7 @@ public class OrderWideApp {
         //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
         //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
+        //env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, org.apache.flink.api.common.time.Time.seconds(10)));
 
         //2.读取kafka主题数据，并转换JavaBean对象&提取时间戳生成WaterMark
         String orderInfoSourceTopic = "dwd_order_info";
@@ -71,6 +73,7 @@ public class OrderWideApp {
                     }
                 }));
 
+        orderInfoDS.print("orderInfoDS>>>>>>");
         SingleOutputStreamOperator<OrderDetail> orderDetailDS = env.addSource(KafkaUtil.getKafkaConsumer(orderDetailSourceTopic, groupId))
                 .map(line -> {
                     OrderDetail orderDetail = JSON.parseObject(line, OrderDetail.class);
@@ -87,7 +90,7 @@ public class OrderWideApp {
                             }
                         }));
 
-
+        orderDetailDS.print("orderDetailDS>>>>>>");
         //3.双流JOIN,状态编程
         SingleOutputStreamOperator<OrderWide> orderWideWithNoDimDS = orderInfoDS.keyBy(OrderInfo::getId)
                 .intervalJoin(orderDetailDS.keyBy(OrderDetail::getOrder_id))
@@ -116,14 +119,18 @@ public class OrderWideApp {
                     @Override
                     public void join(OrderWide orderWide, JSONObject dimInfo) throws ParseException {
                         String birthday = dimInfo.getString("BIRTHDAY");
+                        if (birthday.length() == 10) {
+                            birthday = birthday + " 00:00:00";
+                        }
+                        System.out.println("----------"+birthday);
                         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         long nowTs = System.currentTimeMillis();
-                        long age = (format.parse(birthday).getTime() - nowTs) / (1000 * 60 * 60 * 24 * 365L);
+                        long age = (nowTs - format.parse(birthday).getTime()) / (1000 * 60 * 60 * 24 * 365L);
                         orderWide.setUser_age((int) age);
                         orderWide.setUser_gender(dimInfo.getString("GENDER"));
                     }
                 },
-                75,
+                85,
                 TimeUnit.SECONDS,
                 100);
 

@@ -45,6 +45,7 @@ public class DimSinkFunction extends RichSinkFunction<JSONObject> {
             String tableName = value.getString("sinkTable");
             // 创建插入数据的SQL
             String upsertSql = genUpsertSql(tableName, keySet, values);
+            System.out.println(upsertSql);
             // 如果当前数据为更新操作,则先参数redis中的数据
             if ("u".equals(value.getString("op"))) {
                 // 删除不存的key不会报错

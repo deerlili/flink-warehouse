@@ -105,6 +105,7 @@ public class TableProcessFunction extends BroadcastProcessFunction<JSONObject, S
                 }
             }
             tableTableSQL.append(")").append(sinkExtend);
+            System.out.println(tableTableSQL.toString());
             // 预编译SQL
             preparedStatement = connection.prepareStatement(tableTableSQL.toString());
             // 执行

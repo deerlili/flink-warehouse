@@ -10,6 +10,7 @@ import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Collections;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -52,6 +53,7 @@ public abstract class DimAsyncMethodFunction<T> extends RichAsyncFunction<T, T> 
                         join(input,dimInfo);
                     }
                     //数据输出
+                    resultFuture.complete(Collections.singletonList(input));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

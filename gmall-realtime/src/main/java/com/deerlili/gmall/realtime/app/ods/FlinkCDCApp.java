@@ -40,10 +40,15 @@ public class FlinkCDCApp {
                 .password("123456")
                 .databaseList("gmall_flink")
                 .scanNewlyAddedTableEnabled(true)
-                //.tableList("gmall_flink.*")
-                .tableList("gmall_flink.order_info,gmall_flink.order_detail,gmall_flink.user_info")
-                //.tableList("gmall_flink.base_trademark")
+                .tableList("gmall_flink.order_info,gmall_flink.order_detail")
                 .startupOptions(StartupOptions.latest())
+                /*
+                 * initial:初始化全量读取，然后binlog最新位置增量，就是先查历史数据，增量数据binlog
+                 * earliest:不做初始化，从binlog开始读取。需要（先开启binlog,然后建库,建表）不然会报错
+                 * latest:只会读取连接后的binlog
+                 * timestamp:读取时间戳之后的数据，大于等于
+                 * specificOffset:指定位置
+                 * */
                 .debeziumProperties(properties)
                 .deserializer(new JsonDebeziumDeserializationSchema())
                 .build();
