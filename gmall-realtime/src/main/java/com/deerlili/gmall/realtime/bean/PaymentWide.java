@@ -69,7 +69,6 @@ public class PaymentWide {
             payment_id = paymentInfo.id;
         }
     }
-
     public void mergeOrderWide(OrderWide orderWide) {
         if (orderWide != null) {
             BeanUtils.copyProperties(orderWide, this);
