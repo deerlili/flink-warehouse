@@ -46,7 +46,7 @@ public class OrderWideApp {
         //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
         //env.getCheckpointConfig().setMaxConcurrentCheckpoints(2);
         //env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3000L);
-        //env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, org.apache.flink.api.common.time.Time.seconds(10)));
+        env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, org.apache.flink.api.common.time.Time.seconds(10)));
 
         //2.读取kafka主题数据，并转换JavaBean对象&提取时间戳生成WaterMark
         String orderInfoSourceTopic = "dwd_order_info";
