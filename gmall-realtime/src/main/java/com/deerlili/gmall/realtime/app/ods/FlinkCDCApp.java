@@ -39,8 +39,9 @@ public class FlinkCDCApp {
                 .username("test")
                 .password("123456")
                 .databaseList("gmall_flink")
-                .scanNewlyAddedTableEnabled(true)
-                .tableList("gmall_flink.order_info,gmall_flink.order_detail")
+                //.scanNewlyAddedTableEnabled(true)
+                .tableList("gmall_flink.*")
+                //.tableList("gmall_flink.order_info,gmall_flink.order_detail")
                 .startupOptions(StartupOptions.latest())
                 /*
                  * initial:初始化全量读取，然后binlog最新位置增量，就是先查历史数据，增量数据binlog

@@ -73,7 +73,6 @@ public class OrderWideApp {
                     }
                 }));
 
-        orderInfoDS.print("orderInfoDS>>>>>>");
         SingleOutputStreamOperator<OrderDetail> orderDetailDS = env.addSource(KafkaUtil.getKafkaConsumer(orderDetailSourceTopic, groupId))
                 .map(line -> {
                     OrderDetail orderDetail = JSON.parseObject(line, OrderDetail.class);
@@ -90,7 +89,6 @@ public class OrderWideApp {
                             }
                         }));
 
-        orderDetailDS.print("orderDetailDS>>>>>>");
         //3.双流JOIN,状态编程
         SingleOutputStreamOperator<OrderWide> orderWideWithNoDimDS = orderInfoDS.keyBy(OrderInfo::getId)
                 .intervalJoin(orderDetailDS.keyBy(OrderDetail::getOrder_id))
@@ -129,14 +127,83 @@ public class OrderWideApp {
                         orderWide.setUser_age((int) age);
                         orderWide.setUser_gender(dimInfo.getString("GENDER"));
                     }
-                },
-                85,
-                TimeUnit.SECONDS,
-                100);
+                }, 75, TimeUnit.SECONDS);
 
-        orderWideWithUserDS.print("orderWideWithUserDS>>>");
         //4.2.关联地区维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithProvinceDS = AsyncDataStream.unorderedWait(orderWideWithUserDS,
+                new DimAsyncFunction<OrderWide>("DIM_BASE_PROVINCE") {
+                    @Override
+                    public String getKey(OrderWide input) {
+                        return input.getProvince_id().toString();
+                    }
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject dimInfo) throws ParseException {
+                        orderWide.setProvince_name(dimInfo.getString("NAME"));
+                        orderWide.setProvince_area_code(dimInfo.getString("AREA_CODE"));
+                        orderWide.setProvince_iso_code(dimInfo.getString("ISO_CODE"));
+                        orderWide.setProvince_3166_2_code(dimInfo.getString("ISO_3166_2"));
+                    }
+                }, 75, TimeUnit.SECONDS);
+        //4.3.关联SKU维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithSkuDS = AsyncDataStream.unorderedWait(
+                orderWideWithProvinceDS, new DimAsyncFunction<OrderWide>("DIM_SKU_INFO") {
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject jsonObject) throws ParseException {
+                        orderWide.setSku_name(jsonObject.getString("SKU_NAME"));
+                        orderWide.setCategory3_id(jsonObject.getLong("CATEGORY3_ID"));
+                        orderWide.setSpu_id(jsonObject.getLong("SPU_ID"));
+                        orderWide.setTm_id(jsonObject.getLong("TM_ID"));
+                    }
+                    @Override
+                    public String getKey(OrderWide orderWide) {
+                        return String.valueOf(orderWide.getSku_id());
+                    }
+                }, 75, TimeUnit.SECONDS);
+        //4.4.关联SPU维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithSpuDS = AsyncDataStream.unorderedWait(
+                orderWideWithSkuDS, new DimAsyncFunction<OrderWide>("DIM_SPU_INFO") {
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject jsonObject) throws ParseException {
+                        orderWide.setSpu_name(jsonObject.getString("SPU_NAME"));
+                    }
+                    @Override
+                    public String getKey(OrderWide orderWide) {
+                        return String.valueOf(orderWide.getSpu_id());
+                    }
+                }, 75, TimeUnit.SECONDS);
+        //4.5.关联TM维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithTmDS = AsyncDataStream.unorderedWait(
+                orderWideWithSpuDS, new DimAsyncFunction<OrderWide>("DIM_BASE_TRADEMARK")
+                {
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject jsonObject) throws ParseException {
+                        orderWide.setTm_name(jsonObject.getString("TM_NAME"));
+                    }
+                    @Override
+                    public String getKey(OrderWide orderWide) {
+                        return String.valueOf(orderWide.getTm_id());
+                    }
+                }, 75, TimeUnit.SECONDS);
+        //4.6.关联category维度
+        SingleOutputStreamOperator<OrderWide> orderWideWithCategory3DS = AsyncDataStream.unorderedWait(
+                orderWideWithTmDS,  new DimAsyncFunction<OrderWide>("DIM_BASE_CATEGORY3")
+                {
+                    @Override
+                    public void join(OrderWide orderWide, JSONObject jsonObject) throws ParseException {
+                        orderWide.setCategory3_name(jsonObject.getString("NAME"));
+                    }
+                    @Override
+                    public String getKey(OrderWide orderWide) {
+                        return String.valueOf(orderWide.getCategory3_id());
+                    }
+                }, 60, TimeUnit.SECONDS);
+
+        orderWideWithCategory3DS.print("orderWideWithCategory3DS>>>");
+
         //5.将数据写入kafka
+        orderWideWithCategory3DS.map(JSON::toJSONString)
+                .addSink(KafkaUtil.getKafkaProducer(orderWideSinkTopic));
+
         //6.启动
         env.execute("orderWideApp");
     }

@@ -13,8 +13,6 @@ Ngmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/OrderDetail.java
 Wgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/OrderWideNoDimApp.java,9\a\9a5380ed33c3acbdeb37c5a56e3513c0a0ed5242
 |
 Lgmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/OrderWide.java,e\1\e14276f69cc098a1d71f4e78bef8ed5274de60fa
-F
-gmall-realtime/pom.xml,e\1\e1a11f41a7d3fe8118aaec8e36bb0372f13111e8
 ˆ
 Xgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/ods/FlinkCdcAlibabaApp.java,8\b\8b4a24bcbebfab6a95e57989239acc0c0b43f9ef
 €
