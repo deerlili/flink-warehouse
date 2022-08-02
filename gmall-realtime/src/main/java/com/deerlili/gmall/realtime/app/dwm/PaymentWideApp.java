@@ -24,6 +24,10 @@ import java.text.SimpleDateFormat;
  *
  * @author lixx
  * @date 2022/8/2 17:59
+ * 数据流：web/app -> nginx -> springboot -> mysql -> FlinkApp -> Kafka(ods) -> FlinkApp -> kafka(dwd)/Phoenix(dim)
+ *              -> FlinkApp(redis) -> kafka(dwm) - FlinkApp -> kafka(dwm)
+ * 程 序：mockDb -> mysql -> FlinkCDCApp -> kafka(ZK) -> BaseDBApp -> Kafka/Phoenix(Hbase,zk,hdfs)
+ *            -> OrderWideApp(Redis) -> kafka -> PaymentWideApp -> kafka
  */
 public class PaymentWideApp {
     public static void main(String[] args) throws Exception {
@@ -55,6 +59,7 @@ public class PaymentWideApp {
                         .withTimestampAssigner(new SerializableTimestampAssigner<PaymentInfo>() {
                             @Override
                             public long extractTimestamp(PaymentInfo paymentInfo, long l) {
+                                // TODO SimpleDateFormat 不能提出去，线程安全问题
                                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 try {
                                     return format.parse(paymentInfo.getCreate_time()).getTime();
@@ -70,6 +75,7 @@ public class PaymentWideApp {
                         .withTimestampAssigner(new SerializableTimestampAssigner<OrderWide>() {
                             @Override
                             public long extractTimestamp(OrderWide orderWide, long l) {
+                                // TODO SimpleDateFormat 不能提出去，线程安全问题
                                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 try {
                                     return format.parse(orderWide.getCreate_time()).getTime();
