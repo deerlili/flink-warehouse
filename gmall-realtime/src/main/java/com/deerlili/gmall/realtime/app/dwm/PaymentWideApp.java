@@ -59,7 +59,7 @@ public class PaymentWideApp {
                         .withTimestampAssigner(new SerializableTimestampAssigner<PaymentInfo>() {
                             @Override
                             public long extractTimestamp(PaymentInfo paymentInfo, long l) {
-                                // TODO SimpleDateFormat 不能提出去，线程安全问题
+                                // TODO SimpleDateFormat 不能提出去，这样线程不安全，线程共享，可以使用DateFormatUtil
                                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 try {
                                     return format.parse(paymentInfo.getCreate_time()).getTime();
@@ -75,7 +75,7 @@ public class PaymentWideApp {
                         .withTimestampAssigner(new SerializableTimestampAssigner<OrderWide>() {
                             @Override
                             public long extractTimestamp(OrderWide orderWide, long l) {
-                                // TODO SimpleDateFormat 不能提出去，线程安全问题
+                                // TODO SimpleDateFormat 不能提出去，这样线程不安全，线程共享，可以使用DateFormatUtil
                                 SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                                 try {
                                     return format.parse(orderWide.getCreate_time()).getTime();

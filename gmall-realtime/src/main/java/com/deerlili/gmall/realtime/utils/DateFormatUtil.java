@@ -17,18 +17,19 @@ public class DateFormatUtil {
     private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter dtfFull = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static Long toTs(String dtStr, boolean isFull) {
-
+    public static Long toTs(String Ymd, boolean isFull) {
         LocalDateTime localDateTime = null;
         if (!isFull) {
-            dtStr = dtStr + " 00:00:00";
+            Ymd = Ymd + " 00:00:00";
         }
-        localDateTime = LocalDateTime.parse(dtStr, dtfFull);
-
+        localDateTime = LocalDateTime.parse(Ymd, dtfFull);
         return localDateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
-    public static Long toTs(String dtStr) {
-        return toTs(dtStr, false);
+
+
+    public static Long toTs(String YmdHms) {
+        LocalDateTime localDateTime = LocalDateTime.parse(YmdHms, dtfFull);
+        return localDateTime.toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
 
     public static String toDate(Long ts) {
@@ -43,7 +44,9 @@ public class DateFormatUtil {
         return dtfFull.format(localDateTime);
     }
 
-    public static void main(String[] args) {
-        System.out.println(toYmdHms(System.currentTimeMillis()));
+    public static String toYmdHms(Date date) {
+        LocalDateTime localDateTime = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        return dtfFull.format(localDateTime);
     }
+
 }
