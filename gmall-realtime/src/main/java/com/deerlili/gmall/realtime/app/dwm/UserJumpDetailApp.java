@@ -51,7 +51,7 @@ public class UserJumpDetailApp {
         //3.读取Kafka dwd_page_log主题数据
         String sourceTopic = "dwd_page_log";
         String groupId = "userJumpDetailApp";
-        String sinkTopic = "dwd_user_jump_detail";
+        String sinkTopic = "dwm_user_jump_detail";
         FlinkKafkaConsumer<String> kafkaSource = KafkaUtil.getKafkaConsumer(sourceTopic, groupId);
         DataStreamSource<String> kafkaDS = env.addSource(kafkaSource);
 

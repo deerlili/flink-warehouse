@@ -50,7 +50,7 @@ public class UniqueVisitApp {
 
         String groupId = "unique_visit_app";
         String sourceTopic = "dwd_page_log";
-        String sinkTopic = "dwd_unique_visit";
+        String sinkTopic = "dwm_unique_visit";
         DataStreamSource<String> KafkaDS = env.addSource(KafkaUtil.getKafkaConsumer(sourceTopic, groupId));
 
         SingleOutputStreamOperator<JSONObject> jsonObjDS = KafkaDS.map(JSON::parseObject);
@@ -93,7 +93,7 @@ public class UniqueVisitApp {
             }
         });
 
-        uvDS.print();
+        uvDS.print("uvDS>>>>");
         uvDS.map(jsonObject -> jsonObject.toJSONString()).addSink(KafkaUtil.getKafkaProducer(sinkTopic));
 
         env.execute("UniqueVisitApp");

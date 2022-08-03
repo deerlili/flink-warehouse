@@ -41,6 +41,7 @@ public class OrderWideApp {
 
         //1.1  设置状态后端
         //env.setStateBackend(new FsStateBackend("HDFS://hadoop100:9000/flink/ck"));
+        //System.setProperty("HADOOP_USER_NAME","root");
         //env.enableCheckpointing(5000L);
         //env.getCheckpointConfig().setCheckpointTimeout(10000L);
         //env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);

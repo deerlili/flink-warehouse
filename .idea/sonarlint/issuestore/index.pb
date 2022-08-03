@@ -9,14 +9,8 @@ Mgmall-realtime/src/main/java/com/deerlili/gmall/realtime/utils/MySqlUtil.java,
 Lgmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/OrderInfo.java,d\1\d16cfc3816b77d5617728b7af1a5a6f92e6c0d75
 ~
 Ngmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/OrderDetail.java,1\3\13dfa13c25e3c6d2315bf306914419a15525eddb
-‡
-Wgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/OrderWideNoDimApp.java,9\a\9a5380ed33c3acbdeb37c5a56e3513c0a0ed5242
 |
 Lgmall-realtime/src/main/java/com/deerlili/gmall/realtime/bean/OrderWide.java,e\1\e14276f69cc098a1d71f4e78bef8ed5274de60fa
-ˆ
-Xgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/ods/FlinkCdcAlibabaApp.java,8\b\8b4a24bcbebfab6a95e57989239acc0c0b43f9ef
-€
-Pgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwd/BaseLogApp.java,5\7\574bb7d800f27a09dcfe327601bb289d43801689
 }
 Mgmall-realtime/src/main/java/com/deerlili/gmall/realtime/utils/RedisUtil.java,2\1\21f17ab45f7097f6853bdfebe34afd22dfb8b2d9
 ‚
