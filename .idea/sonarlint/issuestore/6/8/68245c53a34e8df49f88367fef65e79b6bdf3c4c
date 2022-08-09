@@ -1,0 +1,36 @@
+
+j	java:S116"URename this field "payment_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(òô›£
+q	java:S116"WRename this field "payment_type" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(—Â‰úÿÿÿÿ
+x	java:S116"^Rename this field "payment_create_time" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·õšÎûÿÿÿÿ
+m	java:S116"XRename this field "callback_time" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‡½æ
+i	java:S116"TRename this field "detail_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ß•œÛ
+h	java:S116"SRename this field "order_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·³ö¼
+f	java:S116"QRename this field "sku_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(•˜³¥
+p	java:S116"VRename this field "order_price" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÙŞñ¤üÿÿÿÿ
+g	java:S116"RRename this field "sku_num" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ğ„¿·
+m	java:S116"SRename this field "sku_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”¶ Æÿÿÿÿÿ
+p	java:S116"VRename this field "province_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ğ©­øÿÿÿÿ
+k	java:S116 "WRename this field "order_status" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ê£š
+l	java:S116!"RRename this field "user_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.( Áêøÿÿÿÿ
+q	java:S116""WRename this field "total_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ãˆºÈùÿÿÿÿ
+{	java:S116#"aRename this field "activity_reduce_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÅàÕ­üÿÿÿÿ
+y	java:S116$"_Rename this field "coupon_reduce_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(”ÓÆöûÿÿÿÿ
+z	java:S116%"`Rename this field "original_total_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‚Ïó»ÿÿÿÿÿ
+j	java:S116&"URename this field "feight_fee" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Û¥ã–
+o	java:S116'"[Rename this field "split_feight_fee" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Œ¥o
+z	java:S116("`Rename this field "split_activity_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(æØ¯•ÿÿÿÿÿ
+r	java:S116)"^Rename this field "split_coupon_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(åÙ–m
+w	java:S116*"]Rename this field "split_total_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(³û¬¸øÿÿÿÿ
+q	java:S116+"\Rename this field "order_create_time" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÃïÇ
+r	java:S116-"XRename this field "province_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Üçïùÿÿÿÿ
+v	java:S116."\Rename this field "province_iso_code" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ñ¸òøûÿÿÿÿ
+t	java:S116/"_Rename this field "province_3166_2_code" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Ö¡®Ö
+h	java:S1162"SRename this field "user_age" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(öÊ¿
+k	java:S1163"VRename this field "user_gender" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(İó¬Ñ
+f	java:S1165"QRename this field "spu_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À²ºú
+j	java:S1166"PRename this field "tm_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÚÍà‹şÿÿÿÿ
+l	java:S1167"WRename this field "category3_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ş§’÷
+m	java:S1168"SRename this field "spu_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¤×“„üÿÿÿÿ
+l	java:S1169"RRename this field "tm_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(„¾¶¤üÿÿÿÿ
+n	java:S116:"YRename this field "category3_name" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À•Çİ
+V	java:S125-"<This block of commented-out lines of code should be removed.(Üçïùÿÿÿÿ

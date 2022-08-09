@@ -1,0 +1,10 @@
+
+>
+java:S1604="(Make this anonymous inner class a lambda(é²ğ
+C
+java:S1604O"(Make this anonymous inner class a lambda(£»È©şÿÿÿÿ
+a
+java:S1854-"FRemove this useless assignment to local variable "orderWideSinkTopic".(õ„¿—ùÿÿÿÿ
+P	java:S125""<This block of commented-out lines of code should be removed.(¡ú¿K
+R
+java:S1481-"7Remove this unused "orderWideSinkTopic" local variable.(õ„¿—ùÿÿÿÿ

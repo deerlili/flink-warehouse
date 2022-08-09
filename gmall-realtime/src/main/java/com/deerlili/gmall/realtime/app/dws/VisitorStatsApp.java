@@ -3,6 +3,7 @@ package com.deerlili.gmall.realtime.app.dws;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.deerlili.gmall.realtime.bean.VisitorStats;
+import com.deerlili.gmall.realtime.utils.ClickHouseUtil;
 import com.deerlili.gmall.realtime.utils.DateFormatUtil;
 import com.deerlili.gmall.realtime.utils.KafkaUtil;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
@@ -200,7 +201,10 @@ public class VisitorStatsApp {
         });
 
         result.print("result>>>>");
+
         //将数据写ClickHouse
+        //JavaBean和表字段顺序一样可以不写字段名
+        result.addSink(ClickHouseUtil.getClickHouseSink("insert into visitor_stats values(?,?,?,?,?,?,?,?,?,?,?,?)"));
         //启动
         env.execute("VisitorStatsApp");
 

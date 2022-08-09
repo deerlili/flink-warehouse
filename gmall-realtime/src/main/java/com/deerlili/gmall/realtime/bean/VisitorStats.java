@@ -14,11 +14,15 @@ import lombok.Data;
 public class VisitorStats {
     /**
     * 统计开始时间
+     * 不参与序列化
     */
+    @TransientSink
     private String stt;
     /**
      * 统计结束时间
+     * 不参与序列化
      */
+    @TransientSink
     private String edt;
     /**
      * 维度：版本

@@ -1,0 +1,7 @@
+
+o	java:S116"SRename this field "order_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(·³ö¼8Ğ™©ï¥0
+s	java:S116"RRename this field "user_id" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.( Áêøÿÿÿÿ8Ğ™©ï¥0
+x	java:S116"WRename this field "total_amount" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ãˆºÈùÿÿÿÿ8Ğ™©ï¥0
+x	java:S116"WRename this field "payment_type" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(—Â‰úÿÿÿÿ8Ğ™©ï¥0
+w	java:S116"VRename this field "create_time" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ûâ¬âúÿÿÿÿ8Ğ™©ï¥0
+t	java:S116"XRename this field "callback_time" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(‡½æ8Ñ™©ï¥0

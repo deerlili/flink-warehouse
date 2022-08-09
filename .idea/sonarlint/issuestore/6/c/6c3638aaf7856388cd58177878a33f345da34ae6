@@ -1,0 +1,10 @@
+
+i
+java:S1192@"SDefine a constant instead of duplicating this literal "DIM_BASE_TRADEMARK" 3 times.(ŠÇ³Ù
+S	java:S106%"9Replace this use of System.out or System.err by a logger.(âÿ÷Äıÿÿÿÿ
+S	java:S106A"9Replace this use of System.out or System.err by a logger.(“˜¢âşÿÿÿÿ
+N	java:S106D"9Replace this use of System.out or System.err by a logger.(ŠœÜ¿
+S	java:S106F"9Replace this use of System.out or System.err by a logger.(ƒÍšøÿÿÿÿ
+S	java:S106G"9Replace this use of System.out or System.err by a logger.(Àğú‰ùÿÿÿÿ
+N	java:S106U"9Replace this use of System.out or System.err by a logger.(ŞğŠ
+S	java:S106W"9Replace this use of System.out or System.err by a logger.(ôíÖıÿÿÿÿ

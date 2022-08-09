@@ -20,4 +20,14 @@ public class HbaseConfig {
      * Phoenix 参数
      */
     public static final String PHOENIX_SERVER = "jdbc:phoenix:hadoop102,hadoop103,hadoop104:2181";
+    /**
+     * clickHouse url
+     */
+    public static final String CLICKHOUSE_URL = "jdbc:clickhouse://hadoop100:8123/default";
+    /**
+     * clickHouse 驱动
+     */
+    public static final String CLICKHOUSE_DRIVER = "ru.yandex.clickhouse.ClickHouseDriver";
+
+
 }

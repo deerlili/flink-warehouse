@@ -1,0 +1,12 @@
+
+b
+java:S1192L"GDefine a constant instead of duplicating this literal "common" 3 times.(Ã¾öÜøÿÿÿÿ
+m
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 20 to the 15 allowed.(ÙØ¤Þýÿÿÿÿ
+V	java:S125 "<This block of commented-out lines of code should be removed.(ù±Ì†ûÿÿÿÿ
+Q	java:S125A"<This block of commented-out lines of code should be removed.(Ú°à¬
+G
+java:S1948O",Make "valueState" transient or serializable.(ù¬äåúÿÿÿÿ
+Q	java:S125k"<This block of commented-out lines of code should be removed.(Ú°à¬
+Z
+java:S1155">Use isEmpty() to check whether the collection is empty or not.(¤ª„½ÿÿÿÿÿ
