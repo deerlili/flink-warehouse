@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ProductStatsApp
- *
  * @author lixx
  * @date 2022/8/10 15:24
  * 数据流：
@@ -41,7 +40,9 @@ import java.util.concurrent.TimeUnit;
  *      app/web -> nginx -> springboot -> mysql -> flinkApp -> kafka(ods) -> flinkApp -> kafka(dwd)/phoenix -> flinkApp -> kafka(dwm) -> flinkApp -> clickHouse
  * 程 序：
  *     mock_db/mock_log -> nginx -> logger.sh -> kafka(zk)/Phoenix(Hdfs/hbase/zk) -> Redis -> clickHouse
- *     FlinkApp
+ *     FlinkApp(FlinkCDC -> BaseLog -> BaseDb -> OrderWide -> PaymentWide -> ProductStats)
+ *
+ *     要修改配置文件时间 mock_db/mock_log
  */
 public class ProductStatsApp {
     public static void main(String[] args) throws Exception {
