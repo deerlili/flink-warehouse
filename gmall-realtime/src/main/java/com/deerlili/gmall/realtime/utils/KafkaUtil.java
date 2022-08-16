@@ -42,4 +42,21 @@ public class KafkaUtil {
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKER_LIST);
         return new FlinkKafkaConsumer<>(topic, new SimpleStringSchema(), properties);
     }
+
+    /**
+     * 拼接Kafka相关属性到DDL
+     * @param topic
+     * @param groupId
+     * @return
+     */
+    public static String getKafkaDDL(String topic, String groupId) {
+        String ddl = "'connector' = 'kafka', " +
+                " 'topic' = '" + topic + "'," +
+                " 'properties.bootstrap.servers' = '" + BROKER_LIST + "', " +
+                " 'properties.group.id' = '" + groupId + "', " +
+                " 'format' = 'json', " +
+                " 'scan.startup.mode' = 'latest-offset'	";
+        return ddl;
+    }
+
 }
