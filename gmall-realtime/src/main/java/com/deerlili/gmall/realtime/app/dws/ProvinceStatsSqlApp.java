@@ -56,7 +56,8 @@ public class ProvinceStatsSqlApp {
                 "    DATE_FORMAT(TUMBLE_END(rowTime,INTERVAL '10' SECOND ),'yyyy-MM-dd HH:mm:ss' edt," +
                 "    province_id,province_name,province_area_code,province_iso_code,province_3166_2_code," +
                 "    COUNT( DISTINCT order_id) order_count," +
-                "    sum(total_amount) order_amount" +
+                "    sum(total_amount) order_amount," +
+                "    unix_timestamp()*1000 ts" +
                 "from order_wide " +
                 "group by " +
                 "    province_id,province_name,province_area_code,province_iso_code,province_3166_2_code," +
@@ -80,11 +81,11 @@ public class ProvinceStatsSqlApp {
          *  partition by toYYYYMMDD(stt)
          *  order by	(stt,edt,province_id);
          */
-
+        provinceStatsDataStream.print();
         provinceStatsDataStream.addSink(ClickHouseUtil.<ProvinceStats>getClickHouseSink("insert into province_stats values(?,?,?,?,?,?,?,?,?,?)"));
         //TODO 6.启动
 
-        env.execute("");
+        env.execute("ProvinceStatsSqlApp");
 
 
 
