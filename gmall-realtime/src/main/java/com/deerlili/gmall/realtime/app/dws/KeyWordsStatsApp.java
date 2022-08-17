@@ -1,5 +1,6 @@
 package com.deerlili.gmall.realtime.app.dws;
 
+import com.deerlili.gmall.realtime.app.function.SplitFunction;
 import com.deerlili.gmall.realtime.utils.KafkaUtil;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
@@ -41,17 +42,20 @@ public class KeyWordsStatsApp {
                 "WITH ("+ KafkaUtil.getKafkaDDL(pageViewSourceTopic,groupId)+")");
 
         //过滤数据(上一跳为"search"和搜索词不为null)
-        Table sqlQuery = tableEnv.sqlQuery(
+        Table sqlQueryTable = tableEnv.sqlQuery(
                       "select " +
-                        "   page['item'] fullword," +
+                        "   page['item'] full_word," +
                         "   rowTime" +
                         "from " +
                         "   page_view " +
                         "where page['last_page_id']='search' and page['item'] IS NOT NULL ");
 
         //注册UDTF,进行分词
-
+        tableEnv.createTemporarySystemFunction("split_words", SplitFunction.class);
+        Table table = tableEnv.sqlQuery("select word,rowTime from " +
+                sqlQueryTable + ",LATERAL TABLE(split_words(full_word))");
         //分组开窗聚合
+        tableEnv.sqlQuery("");
         //动态表装换为流
         //打印和写入ClickHouse
         //启动任务
