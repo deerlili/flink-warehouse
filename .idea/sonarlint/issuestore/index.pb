@@ -41,8 +41,6 @@ Pgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwd/BaseLogApp.jav
 Xgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/ods/FlinkCdcAlibabaApp.java,8\b\8b4a24bcbebfab6a95e57989239acc0c0b43f9ef
 „
 Tgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/UniqueVisitApp.java,5\2\521ac7137447a569d5c64bf5e0554356793066ae
-‡
-Wgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/UserJumpDetailApp.java,4\d\4d34384fa8ff7f83e9fb49dd3c30f5ebe433394e
 
 Ogmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwd/BaseDBApp.java,0\f\0f5e763be29ebde53bca30f51f3cbe9d9dc0d15a
 …
