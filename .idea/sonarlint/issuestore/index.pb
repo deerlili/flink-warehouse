@@ -39,8 +39,6 @@ Wgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/OrderWideNoDim
 Pgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwd/BaseLogApp.java,5\7\574bb7d800f27a09dcfe327601bb289d43801689
 ˆ
 Xgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/ods/FlinkCdcAlibabaApp.java,8\b\8b4a24bcbebfab6a95e57989239acc0c0b43f9ef
-‚
-Rgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/OrderWideApp.java,a\9\a999f1e01c4523a831f117e9ac1ff952463349c6
 „
 Tgmall-realtime/src/main/java/com/deerlili/gmall/realtime/app/dwm/UniqueVisitApp.java,5\2\521ac7137447a569d5c64bf5e0554356793066ae
 ‡

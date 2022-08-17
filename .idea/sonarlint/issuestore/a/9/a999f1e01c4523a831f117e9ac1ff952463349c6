@@ -1,17 +1,0 @@
-
-o
-java:S1192A"TDefine a constant instead of duplicating this literal "yyyy-MM-dd HH:mm:ss" 3 times.(†‡‘üÿÿÿÿ
->
-java:S1604F"(Make this anonymous inner class a lambda(é²ğ
-C
-java:S1604V"(Make this anonymous inner class a lambda(£»È©şÿÿÿÿ
-P	java:S125+"<This block of commented-out lines of code should be removed.(¡ú¿K
-S	java:S106|"9Replace this use of System.out or System.err by a logger.(‘‰¥€üÿÿÿÿ
-o
-java:S1128	"MRemove this unused import 'com.deerlili.gmall.realtime.utils.DateFormatUtil'.(¨üÿ™ÿÿÿÿÿ8Éíñï¥0
-`
-java:S1128"CRemove this unused import 'org.apache.commons.lang.time.DateUtils'.(éÑ§Œ8Éíñï¥0
-x
-java:S1128"[Remove this unused import 'org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer'.(–…‘ò8Êíñï¥0
-\
-java:S1128"?Remove this unused import 'java.time.format.DateTimeFormatter'.(‰÷÷ª8Êíñï¥0

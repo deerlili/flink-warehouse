@@ -13,6 +13,8 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
  *
  * @author lixx
  * @date 2022/8/11 12:55
+ * 数据流：web/app -> nginx -> springboot -> mysql -> FlinkApp -> Kafka(ods) -> FlinkApp -> kafka(dwd)/Phoenix(dim) -> FlinkApp(redis) -> kafka(dwm) - FlinkApp - Clickhouse
+ * 程 序：mockDb -> mysql -> FlinkCDCApp -> kafka(ZK) -> BaseDBApp -> Kafka/Phoenix(Hbase,zk,hdfs) -> OrderWideApp(Redis) -> kafka -> ProvinceStatsSqlApp -> Clickhouse
  */
 public class ProvinceStatsSqlApp {
     public static void main(String[] args) throws Exception {
@@ -43,6 +45,7 @@ public class ProvinceStatsSqlApp {
                 "province_3166_2_code STRING," +
                 "order_id BIGINT," +
                 "split_total_amount DECIMAL," +
+                "create_time STRING," +
                 "rowTime as TO_TIMESTAMP(create_time)," +
                 "WATERMARK FOR rowTime as rowTime - INTERVAL '1' SECOND" +
                 ") WITH (" + KafkaUtil.getKafkaDDL(orderWideTopic,groupId) +
